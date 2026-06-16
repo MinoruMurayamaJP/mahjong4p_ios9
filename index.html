@@ -699,7 +699,13 @@
     }
 
     .tenkey-key {
-      display: block;
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-align-items: center;
+      align-items: center;
+      -webkit-justify-content: center;
+      justify-content: center;
       width: 100%;
       min-height: 64px;
       border-radius: 12px;
@@ -709,6 +715,7 @@
       font-size: 34px;
       font-weight: 700;
       line-height: 1.1;
+      text-align: center;
       box-shadow: inset 0 2px 2px rgba(255,255,255,0.18), 0 3px 3px rgba(0,0,0,0.35);
     }
 
@@ -716,18 +723,16 @@
       background: #2a3036;
     }
 
-    .tenkey-key.small-label {
-      font-size: 26px;
-    }
-
-    .tenkey-key.backtab-key {
-      font-size: 26px;
+    .tenkey-key.small-label,
+    .tenkey-key.backtab-key,
+    .tenkey-key.return-key {
+      font-size: 80%;
+      text-align: center;
     }
 
     .tenkey-key.return-key {
       min-height: 136px;
       height: 136px;
-      font-size: 26px;
     }
 
     @media (max-width: 620px) {
@@ -738,13 +743,14 @@
         min-height: 56px;
         font-size: 30px;
       }
-      .tenkey-key.backtab-key {
-        font-size: 24px;
+      .tenkey-key.backtab-key,
+      .tenkey-key.small-label,
+      .tenkey-key.return-key {
+        font-size: 80%;
       }
       .tenkey-key.return-key {
         min-height: 120px;
         height: 120px;
-        font-size: 24px;
       }
     }
 
@@ -877,7 +883,7 @@
   <div class="sticky-top">
     <header>
       <h1>麻雀スコア</h1>
-      <div class="version">Ver.20260612-1240</div>
+      <div class="version">Ver.20260612-1245</div>
     </header>
 
     <div class="sticky-inner">
@@ -1603,7 +1609,7 @@ function closeRoundPopup(isCancel, addNextIfLast) {
 }
 
 function makeTenKeyHtml() {
-    return "\n      <div class=\"tenkey-wrap\">\n        <table class=\"tenkey-table\" aria-label=\"点数入力テンキー\">\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"7\">7</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"8\">8</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"9\">9</button></td>\n            <td><button type=\"button\" class=\"tenkey-key small-label\" data-tenkey=\"clear\">Clear</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"4\">4</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"5\">5</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"6\">6</button></td>\n            <td><button type=\"button\" class=\"tenkey-key backtab-key\" data-tenkey=\"backtab\">Back<br>Tab</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"1\">1</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"2\">2</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"3\">3</button></td>\n            <td><button type=\"button\" class=\"tenkey-key return-key\" data-tenkey=\"return\">Return</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"sign\">±</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"0\">0</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"back\">←</button></td>\n            <td><button type=\"button\" class=\"tenkey-key tenkey-empty\" tabindex=\"-1\" aria-hidden=\"true\">&nbsp;</button></td>\n          </tr>\n        </table>\n      </div>\n    ";
+    return "\n      <div class=\"tenkey-wrap\">\n        <table class=\"tenkey-table\" aria-label=\"点数入力テンキー\">\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"7\">7</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"8\">8</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"9\">9</button></td>\n            <td><button type=\"button\" class=\"tenkey-key small-label\" data-tenkey=\"clear\">Clear</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"4\">4</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"5\">5</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"6\">6</button></td>\n            <td><button type=\"button\" class=\"tenkey-key backtab-key\" data-tenkey=\"backtab\">Back Tab</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"1\">1</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"2\">2</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"3\">3</button></td>\n            <td rowspan=\"2\"><button type=\"button\" class=\"tenkey-key return-key\" data-tenkey=\"return\">Return</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"sign\">±</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"0\">0</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"back\">←</button></td>\n          </tr>\n        </table>\n      </div>\n    ";
 }
 function getPopupInput(playerIndex) {
     if (currentInPopupRoundIndex === null)
