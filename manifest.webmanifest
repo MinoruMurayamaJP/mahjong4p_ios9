@@ -1,0 +1,21 @@
+{
+  "name": "麻雀スコア",
+  "short_name": "麻雀スコア",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f6f8",
+  "theme_color": "#15395f",
+  "icons": [
+    {
+      "src": "./mahjong4p_score_192.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "./mahjong4p_score_512.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
