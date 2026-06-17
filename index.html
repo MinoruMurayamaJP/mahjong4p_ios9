@@ -1,0 +1,2607 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#15395f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="麻雀スコア">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <title>麻雀スコア</title>
+  <link rel="apple-touch-icon" href="./mahjong4p_score.jpg">
+  <link rel="apple-touch-icon" sizes="180x180" href="./mahjong4p_score_192.jpg">
+  <link rel="apple-touch-icon" sizes="192x192" href="./mahjong4p_score_192.jpg">
+  <link rel="icon" href="./mahjong4p_score.jpg" type="image/jpeg">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --line: #d9e0e7;
+      --text: #17202a;
+      --muted: #647282;
+      --plus: #1264c8;
+      --minus: #c83232;
+      --warn: #a65f00;
+      --button: #15395f;
+      --button-text: #ffffff;
+      --main-font-size: 23px;
+      --button-font-size: 16px;
+    }
+
+
+/* 閉じるボタンのスタイル */
+    .modal-close-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      background: #647282;
+      color: #ffffff;
+      border: 0;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+
+
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    /* ポップアップ表示時に背景のスクロールを禁止する設定 */
+    body.modal-open {
+      overflow: hidden !important;
+    }
+
+    .sticky-top {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background: rgba(244, 246, 248, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 10px rgba(23, 32, 42, 0.06);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 12px 14px 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: var(--main-font-size);
+      line-height: 1.2;
+    }
+
+    .version {
+      color: var(--muted);
+      font-size: var(--button-font-size);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    main {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 12px 12px 28px;
+    }
+
+    .sticky-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 12px 10px;
+    }
+
+    .sticky-inner section {
+      margin-bottom: 8px;
+    }
+
+    section {
+      margin-bottom: 12px;
+      padding: 12px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .head-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: var(--main-font-size);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: var(--button-font-size);
+    }
+
+    .settings {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    label {
+      display: block;
+      color: var(--muted);
+      font-size: var(--main-font-size);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--text);
+      font: inherit;
+      font-size: var(--main-font-size);
+      text-align: center;
+    }
+
+    input[type="number"] {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .setting-card {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .setting-card input {
+      margin-top: 6px;
+      min-height: 42px;
+      font-weight: 700;
+    }
+
+    .totals {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .total-card {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .name {
+      min-height: 20px;
+      overflow: hidden;
+      color: var(--text);
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .score {
+      margin-top: 4px;
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+
+    .money {
+      margin-top: 2px;
+      font-size: var(--main-font-size);
+      font-variant-numeric: tabular-nums;
+      text-align: center;
+    }
+
+    .plus {
+      color: var(--plus);
+    }
+
+    .minus {
+      color: var(--minus);
+    }
+
+    .round {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .round:last-child {
+      margin-bottom: 0;
+    }
+
+    .round-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .round-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .modal-container .round-title {
+      flex: 1;
+    }
+
+    .balance {
+      color: var(--muted);
+      font-size: var(--button-font-size);
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .balance.warn {
+      color: var(--warn);
+    }
+
+    .round-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+
+    .input-card {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .player-btn {
+      display: block;
+      width: 100%;
+      min-height: 36px;
+      padding: 2px 4px;
+      background: #e8edf3;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      text-align: center;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .player-btn:active {
+      background: #d1daf0;
+    }
+
+    .input-card.locked .player-btn {
+      background: transparent;
+      border-color: transparent;
+      cursor: default;
+      padding: 2px 4px;
+    }
+
+    .auto {
+      margin-top: 6px;
+      text-align: center;
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ーーー 追加：ポップアップ（モーダル）用の一割大きいスタイル設定 ーーー */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      background: rgba(0, 0, 0, 0.68);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: flex-start;
+      justify-content: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 8px) 12px 12px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    /* 指示：サイズは一割くらい大きめで（1.1倍に拡大表示） */
+    .modal-container {
+      width: 100%;
+      max-width: 660px; /* iPad mini / iOS9で横にはみ出さない幅 */
+      transform: none;
+      transform-origin: top center;
+      padding: 4px;
+    }
+
+    /* モーダル内の一割大きい各種パーツ調整 */
+    .modal-container .round {
+      width: 100%;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+      border-width: 2px;
+    }
+
+
+    /* Popヘッダー情報 */
+    .modal-info-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .modal-round-title {
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .modal-help {
+      color: var(--muted);
+      font-size: var(--button-font-size);
+      text-align: center;
+    }
+
+    @media (max-width: 520px) {
+      .modal-info-head {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .modal-info-head .balance {
+        text-align: center;
+      }
+    }
+
+    /* Pop内の操作ボタンは均等割りで配置 */
+    .modal-actions {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      width: 100%;
+    }
+
+    .modal-actions button {
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 520px) {
+      .modal-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    /* ーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー */
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .image-preview {
+      display: none;
+      margin-top: 12px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: center;
+    }
+
+    .image-preview.show {
+      display: block;
+    }
+
+    .image-preview img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .image-preview img:not([src]) {
+      display: none;
+    }
+
+    .image-preview a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      margin-top: 2em;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: var(--button);
+      color: var(--button-text);
+      font-size: var(--button-font-size);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    button {
+      min-height: 42px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--button);
+      color: var(--button-text);
+      font: inherit;
+      font-size: var(--button-font-size);
+      font-weight: 700;
+    }
+
+    button.small {
+      min-height: 42px;
+      padding: 6px 10px;
+      font-size: var(--button-font-size);
+      white-space: nowrap;
+    }
+
+    button.secondary {
+      background: #e8edf3;
+      color: var(--text);
+    }
+
+    button.danger {
+      background: #b92f2f;
+      color: #fff;
+    }
+
+    button.round-clear {
+      background: #f8c7d5;
+      color: #7a2034;
+    }
+
+    button.round-restore {
+      background: #d8f3dc;
+      color: #2d6a4f;
+    }
+
+    button.modal-cancel {
+      background: #95d5b2;
+      color: #1b4332;
+    }
+
+    button.round-lock {
+      background: #d8ecff;
+      color: #174c7c;
+    }
+
+    button.round-lock.locked {
+      background: #174c7c;
+      color: #ffffff;
+      border: 2px solid #174c7c;
+    }
+
+    /* ポップアップ内の「入力完了」状態の緑色ボタンのスタイル */
+    button.round-lock.editing-active {
+      background: #15395f;
+      color: #ffffff;
+      border: 2px solid #15395f;
+    }
+
+    button.input-mode {
+      background: #d8ecff;
+      color: #174c7c;
+      border: 0;
+    }
+
+    button.input-mode.active {
+      background: #174c7c;
+      color: #ffffff;
+      border: 2px solid #174c7c;
+    }
+
+    button.all-lock {
+      background: #d8ecff;
+      color: #174c7c;
+    }
+
+    .input-card.locked {
+      background: #f1f3f5;
+      opacity: 0.72;
+    }
+
+    .setting-card.locked {
+      background: #f1f3f5;
+      opacity: 0.72;
+    }
+
+    .input-card input:disabled {
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      background: #eef1f4;
+    }
+
+    @media (min-width: 620px) {
+      .totals {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .settings {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+
+      .round-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    /* iOS 9.3.5 / iPad mini 用レイアウト調整
+       CSS Grid / gap が効かない環境でも、合計・入力・設定を横並びで表示する */
+    .head-actions {
+      gap: 0;
+      margin: -4px;
+    }
+
+    .head-actions > * {
+      margin: 4px;
+    }
+
+    .totals,
+    .settings,
+    .round-grid,
+    .modal-actions {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      gap: 0;
+      margin: -4px;
+    }
+
+    .total-card,
+    .setting-card,
+    .input-card,
+    .modal-actions button {
+      margin: 4px;
+    }
+
+    .totals .total-card,
+    .settings .setting-card,
+    .round-grid .input-card {
+      width: -webkit-calc(50% - 8px);
+      width: calc(50% - 8px);
+    }
+
+    .modal-actions button {
+      width: -webkit-calc(50% - 8px);
+      width: calc(50% - 8px);
+    }
+
+    .modal-info-head {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: flex;
+      -webkit-flex-wrap: wrap;
+      flex-wrap: wrap;
+      -webkit-align-items: center;
+      align-items: center;
+      gap: 0;
+      margin: -4px -4px 8px;
+    }
+
+    .modal-info-head > * {
+      margin: 4px;
+    }
+
+    .modal-info-head .modal-help {
+      -webkit-box-flex: 1;
+      -webkit-flex: 1 1 280px;
+      flex: 1 1 280px;
+    }
+
+    .modal-info-head .balance {
+      margin-left: auto;
+    }
+
+    @media (min-width: 620px) {
+      .totals .total-card,
+      .round-grid .input-card {
+        width: -webkit-calc(25% - 8px);
+        width: calc(25% - 8px);
+      }
+
+      .settings .setting-card {
+        width: -webkit-calc(20% - 8px);
+        width: calc(20% - 8px);
+      }
+
+      .modal-actions button {
+        width: -webkit-calc(25% - 8px);
+        width: calc(25% - 8px);
+      }
+    }
+
+
+    /* iPad mini専用 Popテンキー */
+    .popup-score-input.active {
+      border: 2px solid #174c7c;
+      box-shadow: 0 0 0 2px rgba(23, 76, 124, 0.15);
+      background: #ffffff;
+    }
+
+    .tenkey-wrap {
+      width: 85%;
+      margin: 14px auto 0;
+      padding: 10px;
+      border-radius: 10px;
+      background: #d3d6da;
+      border: 1px solid #b9bec5;
+    }
+
+    .tenkey-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 8px;
+      table-layout: fixed;
+    }
+
+    .tenkey-table td {
+      width: 25%;
+      padding: 0;
+      vertical-align: middle;
+    }
+
+    .tenkey-key {
+      /* iOS 9.3.5 Safari対策：flex中央寄せは文字が左寄りになるため、昔ながらのline-height中央寄せにする */
+      display: block;
+      width: 100%;
+      min-height: 64px;
+      height: 64px;
+      padding: 0;
+      border-radius: 12px;
+      border: 2px solid #0b0f12;
+      background: #15191d;
+      color: #ffffff;
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 64px;
+      text-align: center;
+      box-shadow: inset 0 2px 2px rgba(255,255,255,0.18), 0 3px 3px rgba(0,0,0,0.35);
+      -webkit-appearance: none;
+    }
+
+    .tenkey-key:active {
+      background: #2a3036;
+    }
+
+    .tenkey-key.small-label,
+    .tenkey-key.backtab-key,
+    .tenkey-key.return-key {
+      font-size: 80%;
+      text-align: center;
+      padding: 0;
+    }
+
+    .tenkey-key.return-key {
+      min-height: 136px;
+      height: 136px;
+      line-height: 136px;
+    }
+
+    @media (max-width: 620px) {
+      .tenkey-wrap {
+        width: 92%;
+      }
+      .tenkey-key {
+        min-height: 56px;
+        height: 56px;
+        line-height: 56px;
+        font-size: 30px;
+      }
+      .tenkey-key.backtab-key,
+      .tenkey-key.small-label,
+      .tenkey-key.return-key {
+        font-size: 80%;
+      }
+      .tenkey-key.return-key {
+        min-height: 120px;
+        height: 120px;
+        line-height: 120px;
+      }
+    }
+
+
+
+
+    /* Ver.1335: iOSテンキー連打時のダブルタップ拡大抑止 */
+    .modal-overlay.show,
+    .modal-container,
+    .tenkey-wrap,
+    .tenkey-table,
+    .tenkey-key {
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+
+    /* 全体表示モード：ライト／ダーク */
+    body.theme-dark {
+      background: #11161b;
+      color: #f3f6f8;
+    }
+
+    body.theme-dark .sticky-top {
+      background: rgba(17, 22, 27, 0.96);
+      border-bottom-color: #343b44;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.45);
+    }
+
+    body.theme-dark section,
+    body.theme-dark .round,
+    body.theme-dark .image-preview {
+      background: #171d22;
+      border-color: #3a424c;
+      color: #f3f6f8;
+    }
+
+    body.theme-dark .total-card,
+    body.theme-dark .setting-card,
+    body.theme-dark .input-card {
+      background: #20272e;
+      border-color: #3a424c;
+      color: #f3f6f8;
+    }
+
+    body.theme-dark .name,
+    body.theme-dark h1,
+    body.theme-dark h2,
+    body.theme-dark .modal-round-title,
+    body.theme-dark .player-btn,
+    body.theme-dark input {
+      color: #f3f6f8;
+    }
+
+    body.theme-dark .muted,
+    body.theme-dark label,
+    body.theme-dark .version,
+    body.theme-dark .modal-help,
+    body.theme-dark .balance {
+      color: #b7c1cc;
+    }
+
+    body.theme-dark input {
+      background: #11161b;
+      border-color: #59616b;
+      -webkit-text-fill-color: #f3f6f8;
+    }
+
+    body.theme-dark .player-btn {
+      background: #303842;
+      border-color: #59616b;
+    }
+
+    body.theme-dark .input-card.locked,
+    body.theme-dark .setting-card.locked {
+      background: #222a32;
+      opacity: 0.72;
+    }
+
+    body.theme-dark .input-card.locked .player-btn {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    body.theme-dark .input-card input:disabled {
+      background: #1a2026;
+      color: #f3f6f8;
+      -webkit-text-fill-color: #f3f6f8;
+    }
+
+    body.theme-dark button.secondary,
+    body.theme-dark button.input-mode,
+    body.theme-dark button.all-lock {
+      background: #28323c;
+      color: #d9e8f8;
+    }
+
+    body.theme-dark button.input-mode.active,
+    body.theme-dark button.round-lock.locked {
+      background: #174c7c;
+      color: #ffffff;
+    }
+
+    body.theme-dark .popup-score-input.active {
+      border-color: #7fb2ff;
+      box-shadow: 0 0 0 2px rgba(127,178,255,0.25);
+      background: #11161b;
+    }
+
+    body.theme-dark .modal-overlay {
+      background: rgba(0,0,0,0.72);
+    }
+
+    body.theme-dark .tenkey-wrap {
+      background: #202428;
+      border-color: #3a424c;
+    }
+
+    body.theme-dark .tenkey-key {
+      background: #0d1114;
+      border-color: #333b43;
+      color: #ffffff;
+      box-shadow: inset 0 2px 2px rgba(255,255,255,0.12), 0 3px 3px rgba(0,0,0,0.55);
+    }
+
+    body.theme-dark .tenkey-key:active {
+      background: #2a3036;
+    }
+
+    body.theme-dark .image-preview img {
+      background: #ffffff;
+    }
+
+
+    /* Ver.1350: モデルチェンジ入力表＋設定Pop */
+    header.app-header {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 10px 12px;
+    }
+    .app-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .app-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      flex: 0 0 auto;
+    }
+    .app-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+    button.icon-settings {
+      width: 52px;
+      min-height: 52px;
+      padding: 0;
+      border-radius: 9px;
+      font-size: 28px;
+      line-height: 52px;
+      text-align: center;
+      background: #0d4f95;
+      color: #ffffff;
+    }
+    .sticky-inner section.total-sticky-section {
+      margin-bottom: 0;
+    }
+    .total-sticky-section .section-head {
+      align-items: flex-start;
+    }
+    .total-sticky-section #makeImage {
+      min-width: 160px;
+      min-height: 48px;
+      font-size: 18px;
+      background: #0d4f95;
+      color: #ffffff;
+    }
+    .score-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .score-entry-table {
+      width: 100%;
+      min-width: 620px;
+      border-collapse: separate;
+      border-spacing: 10px 8px;
+      table-layout: fixed;
+    }
+    .score-entry-table th,
+    .score-entry-table td {
+      padding: 0;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .score-entry-table .round-col {
+      width: 120px;
+    }
+    .score-entry-table .player-head,
+    .score-entry-table .score-cell,
+    .score-entry-table .round-button-cell {
+      min-height: 48px;
+      height: 48px;
+      border: 1px solid #9fa9b4;
+      border-radius: 5px;
+      background: #ffffff;
+      color: var(--text);
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      line-height: 48px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .score-entry-table .round-button-cell,
+    .score-entry-table .add-round-table-btn {
+      display: block;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #083a73;
+      background: #0d4f95;
+      color: #ffffff;
+      font-size: var(--main-font-size);
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.22);
+    }
+    .score-entry-table .add-round-table-btn {
+      min-height: 48px;
+      height: 48px;
+      line-height: 48px;
+      padding: 0;
+    }
+    .score-entry-table .score-cell {
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    /* Ver.1366: 入力表の点数色を合計欄と同じルールにする（ライト／ダーク共通） */
+    .score-entry-table .score-cell.plus {
+      color: var(--plus);
+    }
+    .score-entry-table .score-cell.minus {
+      color: var(--minus);
+    }
+    .score-entry-table .score-cell:active,
+    .score-entry-table .round-button-cell:active,
+    .score-entry-table .add-round-table-btn:active,
+    button.icon-settings:active {
+      opacity: 0.85;
+    }
+    .settings-hidden-section {
+      display: none !important;
+    }
+    .settings-popup {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      color: var(--text);
+      box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+    }
+    .settings-popup-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .settings-popup-title {
+      font-size: var(--main-font-size);
+      font-weight: 700;
+    }
+    .settings-popup-close {
+      width: 42px;
+      min-height: 42px;
+      padding: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--text);
+      font-size: 32px;
+      line-height: 42px;
+    }
+    .settings-popup-grid {
+      display: flex;
+      flex-wrap: wrap;
+      margin: -6px;
+    }
+    .settings-popup-card {
+      width: calc(20% - 12px);
+      margin: 6px;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+    .settings-popup-card label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: var(--main-font-size);
+      text-align: center;
+    }
+    .settings-popup-card input {
+      min-height: 44px;
+      font-weight: 700;
+    }
+    .settings-popup-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .settings-popup-actions button {
+      flex: 1 1 0;
+      min-height: 48px;
+      font-size: var(--button-font-size);
+    }
+    @media (max-width: 620px) {
+      .app-icon { width: 36px; height: 36px; }
+      button.icon-settings { width: 46px; min-height: 46px; line-height: 46px; }
+      .score-entry-table { min-width: 560px; border-spacing: 8px 7px; }
+      .score-entry-table .round-col { width: 100px; }
+      .settings-popup-card { width: calc(50% - 12px); }
+      .settings-popup-actions { flex-wrap: wrap; }
+      .settings-popup-actions button { flex-basis: calc(50% - 10px); }
+    }
+    body.theme-dark .score-entry-table .player-head,
+    body.theme-dark .score-entry-table .score-cell {
+      background: #11161b;
+      border-color: #59616b;
+      color: #f3f6f8;
+    }
+    /* Ver.1366: ダーク時も入力表の点数色を維持 */
+    body.theme-dark .score-entry-table .score-cell.plus {
+      color: var(--plus);
+    }
+    body.theme-dark .score-entry-table .score-cell.minus {
+      color: var(--minus);
+    }
+    body.theme-dark .settings-popup {
+      background: #171d22;
+      border-color: #3a424c;
+      color: #f3f6f8;
+    }
+    body.theme-dark .settings-popup-card {
+      background: #20272e;
+      border-color: #3a424c;
+    }
+    body.theme-dark .settings-popup-close {
+      color: #f3f6f8;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div id="modalOverlay" class="modal-overlay">
+    <div id="modalContainer" class="modal-container">
+      </div>
+  </div>
+
+  <div class="sticky-top">
+    <header class="app-header">
+      <div class="app-title-wrap">
+        <img class="app-icon" src="./mahjong4p_score.jpg" alt="">
+        <h1>麻雀スコア</h1>
+      </div>
+      <div class="app-header-right">
+        <div class="version">Ver.260612-1367</div>
+        <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
+      </div>
+    </header>
+
+    <div class="sticky-inner">
+      <section class="total-sticky-section">
+        <div class="section-head">
+          <h2>合計</h2>
+          <div class="head-actions">
+            <button id="makeImage" type="button" class="small round-lock locked">画像作成</button>
+          </div>
+        </div>
+        <div id="rateLabel" class="muted"></div>
+        <div id="totals" class="totals"></div>
+      </section>
+    </div>
+  </div>
+
+  <main>
+    <section id="scoreInputSection">
+      <div class="section-head">
+        <h2>入力</h2>
+        <span class="muted">空欄1人なら差額補完</span>
+      </div>
+      <div id="rounds"></div>
+      <button id="addRound" type="button" class="secondary" style="display:none">回を追加</button>
+    </section>
+
+    <section class="settings-hidden-section" aria-hidden="true">
+      <div class="section-head">
+        <h2>設定</h2>
+        <div class="head-actions">
+          <button id="settingsLockToggle" type="button" class="small round-lock">入力ロック</button>
+          <button id="themeModeToggle" type="button" class="small input-mode">ライト</button>
+          <button id="clearScores" type="button" class="danger small">全点数クリア</button>
+          <button id="allReset" type="button" class="danger small">All Reset</button>
+          <button id="jumpToInput" type="button" class="secondary small">最終入力行へ</button>
+        </div>
+      </div>
+      <div class="settings">
+        <div class="setting-card">
+          <label for="rate">Rate</label>
+          <input id="rate" inputmode="numeric" type="text">
+        </div>
+        <div class="setting-card">
+          <label for="player0">P1</label>
+          <input id="player0" type="text" inputmode="text" autocomplete="off">
+        </div>
+        <div class="setting-card">
+          <label for="player1">P2</label>
+          <input id="player1" type="text" inputmode="text" autocomplete="off">
+        </div>
+        <div class="setting-card">
+          <label for="player2">P3</label>
+          <input id="player2" type="text" inputmode="text" autocomplete="off">
+        </div>
+        <div class="setting-card">
+          <label for="player3">P4</label>
+          <input id="player3" type="text" inputmode="text" autocomplete="off">
+        </div>
+      </div>
+    </section>
+
+    <section id="imagePreview" class="image-preview">
+      <div class="section-head">
+        <h2>画像</h2>
+        <button id="backToInputFromImage" type="button" class="secondary small">最終入力行へ</button>
+      </div>
+      <img id="scoreImage" alt="麻雀スコア画像">
+      <a id="downloadImage" href="#" download="mahjong-score.png">画像を保存</a>
+      <div class="muted">iPhoneでは画像を長押しして保存できます。</div>
+    </section>
+  </main>
+
+  <script>var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var saveKey = "mahjong4p-score-v1";
+var playerCount = 4;
+// iOS 9 Safari向け互換処理
+if (!Array.from) {
+    Array.from = function (arrayLike, mapFn) {
+        var result = [];
+        var length = Number(arrayLike.length) || 0;
+        for (var i = 0; i < length; i += 1) {
+            result.push(mapFn ? mapFn(arrayLike[i], i) : arrayLike[i]);
+        }
+        return result;
+    };
+}
+if (!Array.prototype.fill) {
+    Array.prototype.fill = function (value) {
+        for (var i = 0; i < this.length; i += 1) {
+            this[i] = value;
+        }
+        return this;
+    };
+}
+if (!Number.isFinite) {
+    Number.isFinite = function (value) {
+        return typeof value === "number" && isFinite(value);
+    };
+}
+if (!Number.isInteger) {
+    Number.isInteger = function (value) {
+        return typeof value === "number" && isFinite(value) && Math.floor(value) === value;
+    };
+}
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function (search, position) {
+        position = position || 0;
+        return this.substr(position, search.length) === search;
+    };
+}
+
+// iOS 9 Safariでは querySelectorAll の戻り値(NodeList)に forEach が無い場合がある
+// これが無いと render() が途中停止し、合計・1回目が表示されないため補完する
+if (typeof NodeList !== "undefined" && NodeList.prototype && !NodeList.prototype.forEach) {
+    NodeList.prototype.forEach = Array.prototype.forEach;
+}
+if (typeof HTMLCollection !== "undefined" && HTMLCollection.prototype && !HTMLCollection.prototype.forEach) {
+    HTMLCollection.prototype.forEach = Array.prototype.forEach;
+}
+function deepClone(value) {
+    return JSON.parse(JSON.stringify(value));
+}
+var initialState = {
+    rate: 50,
+    settingsLocked: true,
+    selectAllOnFocus: true,
+    scoreInputTextMode: true,
+    themeMode: "light",
+    players: ["Ｐ１名", "Ｐ２名", "Ｐ３名", "Ｐ４名"],
+    rounds: Array.from({ length: 1 }, function (_, index) { return ({
+        number: index + 1,
+        inputs: Array(playerCount).fill(null),
+        locked: true
+    }); })
+};
+var state = loadState();
+var currentInPopupRoundIndex = null; // 現在ポップ画面で開いている回の番号を記録
+var popupBackupState = null; // ポップアップで「キャンセル」を実現するため、開く直前の状態を退避
+var popupClearedInputs = null; // Popの「点数クリア」直前の点数を退避。「得点復活」で戻す
+var activePopupPlayerIndex = 0; // Pop専用テンキーの現在入力対象
+var popupReplaceOnNextDigit = false; // 入力欄選択直後の数字入力は置換する
+var rateInput = document.getElementById("rate");
+var rateLabel = document.getElementById("rateLabel");
+var totalsEl = document.getElementById("totals");
+var roundsEl = document.getElementById("rounds");
+var addRoundButton = document.getElementById("addRound");
+var clearScoresButton = document.getElementById("clearScores");
+var allResetButton = document.getElementById("allReset");
+var toggleAllLocksButton = document.getElementById("toggleAllLocks");
+var settingsLockToggleButton = document.getElementById("settingsLockToggle");
+var themeModeToggleButton = document.getElementById("themeModeToggle");
+var jumpToSettingsButton = document.getElementById("jumpToSettings");
+var jumpToInputButton = document.getElementById("jumpToInput");
+var makeImageButton = document.getElementById("makeImage");
+var imagePreview = document.getElementById("imagePreview");
+var scoreImage = document.getElementById("scoreImage");
+var downloadImage = document.getElementById("downloadImage");
+var backToInputFromImageButton = document.getElementById("backToInputFromImage");
+var playerInputs = Array.from({ length: playerCount }, function (_, index) { return document.getElementById("player".concat(index)); });
+// モーダル表示用のHTML要素を取得
+var modalOverlay = document.getElementById("modalOverlay");
+var modalContainer = document.getElementById("modalContainer");
+var originalViewportContent = "width=device-width, initial-scale=1, viewport-fit=cover";
+var viewportMeta = document.querySelector('meta[name="viewport"]');
+if (viewportMeta) {
+    originalViewportContent = viewportMeta.getAttribute("content") || originalViewportContent;
+}
+function setPopupZoomLock(locked) {
+    if (!viewportMeta)
+        return;
+    if (locked) {
+        viewportMeta.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
+    }
+    else {
+        viewportMeta.setAttribute("content", originalViewportContent);
+    }
+}
+
+function loadState() {
+    try {
+        var saved = localStorage.getItem(saveKey);
+        if (!saved)
+            return deepClone(initialState);
+        var parsed = JSON.parse(saved);
+        var loaded = normalizeState(parsed);
+        loaded.rounds.forEach(function (round) {
+            round.locked = true;
+        });
+        loaded.settingsLocked = true;
+        if (!loaded.rounds || loaded.rounds.length === 0) {
+            loaded.rounds = [makeEmptyRound(1)];
+        }
+        return loaded;
+    }
+    catch (_a) {
+        return deepClone(initialState);
+    }
+}
+function normalizeState(raw) {
+    var state = {
+        rate: Number.isFinite(Number(raw.rate)) ? Number(raw.rate) : 50,
+        settingsLocked: Boolean(raw.settingsLocked),
+        selectAllOnFocus: raw.selectAllOnFocus !== false,
+        scoreInputTextMode: raw.scoreInputTextMode !== false,
+        themeMode: raw.themeMode === "dark" ? "dark" : "light",
+        players: Array.isArray(raw.players) ? raw.players.slice(0, playerCount) : initialState.players.slice(),
+        rounds: Array.isArray(raw.rounds) ? raw.rounds : []
+    };
+    while (state.players.length < playerCount) {
+        state.players.push("");
+    }
+    state.rounds = state.rounds.map(function (round, index) { return ({
+        number: Number.isFinite(Number(round.number)) ? Number(round.number) : index + 1,
+        inputs: normalizeInputs(round.inputs),
+        locked: Boolean(round.locked)
+    }); });
+    if (state.rounds.length === 0) {
+        state.rounds = deepClone(initialState.rounds);
+    }
+    compactEmptyTail(state);
+    return state;
+}
+function normalizeInputs(inputs) {
+    var values = Array.isArray(inputs) ? inputs.slice(0, playerCount) : [];
+    while (values.length < playerCount) {
+        values.push(null);
+    }
+    return values.map(function (value) {
+        if (value === null || value === undefined || value === "") {
+            return null;
+        }
+        var number = Number(value);
+        return Number.isFinite(number) ? number : null;
+    });
+}
+// 入力済みの最後の回より後ろにある空行は表示しない。古い保存データの20行初期表示も1行へ整理する。
+function compactEmptyTail(targetState) {
+    while (targetState.rounds.length > 1) {
+        var lastRound = targetState.rounds[targetState.rounds.length - 1];
+        var hasInput = normalizeInputs(lastRound.inputs).some(function (value) { return value !== null; });
+        if (hasInput)
+            break;
+        targetState.rounds.pop();
+    }
+    targetState.rounds.forEach(function (round, index) {
+        round.number = index + 1;
+    });
+}
+function createNextRound() {
+    return makeEmptyRound(state.rounds.length + 1);
+}
+function makeEmptyRound(number) {
+    return {
+        number: number || 1,
+        inputs: [null, null, null, null],
+        locked: true
+    };
+}
+function ensureInitialRound() {
+    if (!state) {
+        state = deepClone(initialState);
+    }
+    if (!state.rounds || !Array.isArray(state.rounds)) {
+        state.rounds = [];
+    }
+    if (state.rounds.length === 0) {
+        state.rounds.push(makeEmptyRound(1));
+    }
+    for (var i = 0; i < state.rounds.length; i += 1) {
+        if (!state.rounds[i]) {
+            state.rounds[i] = makeEmptyRound(i + 1);
+        }
+        state.rounds[i].number = i + 1;
+        state.rounds[i].inputs = normalizeInputs(state.rounds[i].inputs);
+        state.rounds[i].locked = Boolean(state.rounds[i].locked);
+    }
+}
+ensureInitialRound();
+function saveState() {
+    localStorage.setItem(saveKey, JSON.stringify(state));
+}
+function hideImagePreview() {
+    imagePreview.classList.remove("show");
+    scoreImage.removeAttribute("src");
+    downloadImage.href = "#";
+}
+function completedScores(round) {
+    var values = normalizeInputs(round.inputs);
+    var entered = values.filter(function (value) { return value !== null; });
+    var blankIndexes = values
+        .map(function (value, index) { return value === null ? index : -1; })
+        .filter(function (index) { return index >= 0; });
+    if (entered.length === 0) {
+        return Array(playerCount).fill(null);
+    }
+    if (blankIndexes.length === 1) {
+        var sum = entered.reduce(function (total, value) { return total + value; }, 0);
+        values[blankIndexes[0]] = -sum;
+    }
+    return values;
+}
+function totals() {
+    var result = Array(playerCount).fill(0);
+    for (var _i = 0, _a = state.rounds; _i < _a.length; _i++) {
+        var round = _a[_i];
+        completedScores(round).forEach(function (value, index) {
+            result[index] += value !== null && value !== void 0 ? value : 0;
+        });
+    }
+    return result;
+}
+function signed(value) {
+    if (value > 0)
+        return "+".concat(value);
+    return String(value);
+}
+function signedImage(value) {
+    if (value > 0)
+        return "+".concat(value);
+    return String(value);
+}
+function yen(value) {
+    var abs = Math.abs(value).toLocaleString("ja-JP");
+    if (value > 0)
+        return "+".concat(abs, "\u5186");
+    if (value < 0)
+        return "-".concat(abs, "\u5186");
+    return "0円";
+}
+function yenImage(value) {
+    var abs = Math.abs(value).toLocaleString("ja-JP");
+    if (value > 0)
+        return "+".concat(abs, "\u5186");
+    if (value < 0)
+        return "-".concat(abs, "\u5186");
+    return "0円";
+}
+function scoreClass(value) {
+    if (value > 0)
+        return "plus";
+    if (value < 0)
+        return "minus";
+    return "";
+}
+function drawRoundRect(ctx, x, y, width, height, radius) {
+    var r = Math.min(radius, width / 2, height / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + width, y, x + width, y + height, r);
+    ctx.arcTo(x + width, y + height, x, y + height, r);
+    ctx.arcTo(x, y + height, x, y, r);
+    ctx.arcTo(x, y, x + width, y, r);
+    ctx.closePath();
+}
+function drawText(ctx, text, x, y, options) {
+    var _a, _b, _c, _d, _e;
+    if (options === void 0) { options = {}; }
+    ctx.fillStyle = (_a = options.color) !== null && _a !== void 0 ? _a : "#17202a";
+    ctx.font = "".concat((_b = options.weight) !== null && _b !== void 0 ? _b : 400, " ").concat((_c = options.size) !== null && _c !== void 0 ? _c : 23, "px -apple-system, BlinkMacSystemFont, sans-serif");
+    ctx.textAlign = (_d = options.align) !== null && _d !== void 0 ? _d : "center";
+    ctx.textBaseline = (_e = options.baseline) !== null && _e !== void 0 ? _e : "middle";
+    ctx.fillText(text, x, y);
+}
+function drawReverseTitle(ctx, text, x, y, width, height) {
+    ctx.fillStyle = "#17202a";
+    drawRoundRect(ctx, x, y, width, height, 8);
+    ctx.fill();
+    drawText(ctx, " ".concat(text, " "), x + width / 2, y + height / 2, {
+        color: "#ffffff",
+        weight: 700,
+        size: 108
+    });
+}
+function colorForValue(value) {
+    if (value > 0)
+        return "#1264c8";
+    if (value < 0)
+        return "#c83232";
+    return "#17202a";
+}
+function colorForValueImage(value) {
+    // Ver.1305: 画像作成専用。ミニサーマルプリンタ向けにプラス/マイナスも黒で統一。
+    return "#000000";
+}
+function roundsForImage() {
+    var lastEnteredIndex = lastEnteredRoundIndex();
+    if (lastEnteredIndex < 0) {
+        return [];
+    }
+    return state.rounds.slice(0, lastEnteredIndex + 1);
+}
+function lastEnteredRoundIndex() {
+    return state.rounds.reduce(function (last, round, index) {
+        return round.inputs.some(function (value) { return value !== null; }) ? index : last;
+    }, -1);
+}
+function focusRoundInput(roundIndex) {
+    var safeRoundIndex = Math.max(0, Math.min(roundIndex, state.rounds.length - 1));
+    var container = currentInPopupRoundIndex !== null ? modalContainer : roundsEl;
+    var targetInput = container.querySelector("input[data-round=\"".concat(safeRoundIndex, "\"][data-player=\"0\"]"));
+    if (targetInput) {
+        targetInput.focus();
+        applyInputModeSelection(targetInput);
+    }
+}
+function applyInputModeSelection(input) {
+    // Ver.1260: 全ての入力項目は常に全選択。
+    // 数字の打ち直しを優先し、「入力モード」切替は廃止。
+    setTimeout(function () {
+        try {
+            input.select();
+        } catch (_a) {}
+    }, 0);
+}
+// ポップ画面ではTab移動を得点入力欄だけに限定する
+function applyPopupTabStops() {
+    if (currentInPopupRoundIndex === null)
+        return;
+    modalContainer.querySelectorAll("button").forEach(function (button) {
+        button.tabIndex = -1;
+    });
+    modalContainer.querySelectorAll("input").forEach(function (input) {
+        input.tabIndex = 0;
+    });
+}
+function handlePopupTabKey(event) {
+    if (currentInPopupRoundIndex === null)
+        return;
+    if (event.key !== "Tab" && event.key !== "Enter")
+        return;
+    var inputs = Array.from(modalContainer.querySelectorAll("input"))
+        .filter(function (input) { return !input.disabled; });
+    if (inputs.length === 0)
+        return;
+    event.preventDefault();
+    var currentIndex = inputs.indexOf(document.activeElement);
+    var baseIndex = currentIndex >= 0 ? currentIndex : 0;
+    var nextIndex = event.shiftKey
+        ? (baseIndex - 1 + inputs.length) % inputs.length
+        : (baseIndex + 1) % inputs.length;
+    inputs[nextIndex].focus();
+    applyInputModeSelection(inputs[nextIndex]);
+}
+function makeScoreImage() {
+    var dataUrl = "";
+    try {
+        var imageRounds = roundsForImage();
+        var rawTotals = totals();
+        var scale = 1;
+        var cssWidth = 1800;
+        var padding = 56;
+        var gap = 28;
+        var imageFont = 92;
+        var imageSmallFont = 64;
+        // Ver.1295以降の画像作成専用設定。
+        // 合計欄は継続：名前は元サイズ、点数・金額は1.3倍、金額は太字。
+        var imageNameFont = imageFont;
+        var imageValueFont = Math.round(imageFont * 1.3);
+        var imageMoneyFont = Math.round(imageFont * 1.3);
+        var imagePointShift = Math.round(imageValueFont * 1.75);
+        var totalRowHeight = 140;
+        var headerHeight = 140;
+        var bottomBlankLine = imageFont * 1.25;
+        var totalSectionHeight = headerHeight + totalRowHeight * playerCount + gap;
+        // Ver.1330: 入力欄のみ、行数節約の横表形式。
+        // 入力値は非表示、補完後点数のみ表示。
+        var inputHeaderRowHeight = 100;
+        var inputRowHeight = 138;
+        var inputTableHeight = imageRounds.length === 0 ? 74 : inputHeaderRowHeight + imageRounds.length * inputRowHeight;
+        var roundsHeight = inputTableHeight;
+        var cssHeight = padding * 2 + totalSectionHeight + roundsHeight + bottomBlankLine + 70;
+        var canvas = document.createElement("canvas");
+        canvas.width = cssWidth * scale;
+        canvas.height = cssHeight * scale;
+        canvas.style.width = "".concat(cssWidth, "px");
+        canvas.style.height = "".concat(cssHeight, "px");
+        var ctx = canvas.getContext("2d");
+        ctx.scale(scale, scale);
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, cssWidth, cssHeight);
+
+        // 合計欄：現状維持
+        drawReverseTitle(ctx, "合計", padding, padding, 320, 128);
+        // drawText(ctx, "\u63DB\u7B97 ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
+        drawText(ctx, "Rate ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
+            align: "right",
+            size: imageSmallFont,
+            color: "#000000"
+        });
+        var totalY = padding + headerHeight;
+        drawRoundRect(ctx, padding, totalY, cssWidth - padding * 2, totalRowHeight * playerCount, 8);
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        for (var index = 0; index < playerCount; index += 1) {
+            var rowY = totalY + totalRowHeight * index;
+            var total = rawTotals[index];
+            var converted = total * state.rate;
+            if (index > 0) {
+                ctx.beginPath();
+                ctx.moveTo(padding + 18, rowY);
+                ctx.lineTo(cssWidth - padding - 18, rowY);
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+            drawText(ctx, state.players[index] || "P".concat(index + 1), padding + 28, rowY + totalRowHeight / 2, {
+                align: "left",
+                color: "#000000",
+                weight: 700,
+                size: imageNameFont
+            });
+            drawText(ctx, signedImage(total), cssWidth - padding - 620 - imagePointShift, rowY + totalRowHeight / 2, {
+                align: "right",
+                color: "#000000",
+                size: imageValueFont
+            });
+            drawText(ctx, yenImage(converted), cssWidth - padding - 28, rowY + totalRowHeight / 2, {
+                align: "right",
+                color: "#000000",
+                weight: 700,
+                size: imageMoneyFont
+            });
+        }
+
+        // 入力欄：行数節約の横表形式、入力値なし、点数のみ
+        var y = totalY + totalRowHeight * playerCount + gap + 70;
+        drawReverseTitle(ctx, "入力", padding, y - 64, 320, 128);
+        y += 100;
+        if (imageRounds.length === 0) {
+            drawText(ctx, "入力済みの点数はありません", cssWidth / 2, y + 24, {
+                color: "#000000",
+                size: imageSmallFont
+            });
+        }
+        else {
+            var tableX = padding;
+            var tableW = cssWidth - padding * 2;
+            var roundColW = 170;
+            var playerColW = (tableW - roundColW) / playerCount;
+            var tableH = inputHeaderRowHeight + imageRounds.length * inputRowHeight;
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 3;
+            ctx.strokeRect(tableX, y, tableW, tableH);
+
+            // ヘッダー下線
+            ctx.beginPath();
+            ctx.moveTo(tableX, y + inputHeaderRowHeight);
+            ctx.lineTo(tableX + tableW, y + inputHeaderRowHeight);
+            ctx.stroke();
+
+            // 縦線
+            var vx = tableX + roundColW;
+            ctx.beginPath();
+            ctx.moveTo(vx, y);
+            ctx.lineTo(vx, y + tableH);
+            ctx.stroke();
+            for (var index = 1; index < playerCount; index += 1) {
+                vx = tableX + roundColW + playerColW * index;
+                ctx.beginPath();
+                ctx.moveTo(vx, y);
+                ctx.lineTo(vx, y + tableH);
+                ctx.stroke();
+            }
+
+            // 横線（各回）
+            for (var r = 1; r < imageRounds.length; r += 1) {
+                var hy = y + inputHeaderRowHeight + inputRowHeight * r;
+                ctx.beginPath();
+                ctx.moveTo(tableX, hy);
+                ctx.lineTo(tableX + tableW, hy);
+                ctx.stroke();
+            }
+
+            // ヘッダー
+            drawText(ctx, "回", tableX + roundColW / 2, y + inputHeaderRowHeight / 2, {
+                color: "#000000",
+                weight: 700,
+                size: imageSmallFont
+            });
+            for (var index = 0; index < playerCount; index += 1) {
+                drawText(ctx, state.players[index] || "P".concat(index + 1), tableX + roundColW + playerColW * index + playerColW / 2, y + inputHeaderRowHeight / 2, {
+                    color: "#000000",
+                    weight: 700,
+                    size: imageNameFont
+                });
+            }
+
+            // 点数行
+            for (var _i = 0, imageRounds_1 = imageRounds; _i < imageRounds_1.length; _i++) {
+                var round = imageRounds_1[_i];
+                var scores = completedScores(round);
+                var rowCenterY = y + inputHeaderRowHeight + inputRowHeight * _i + inputRowHeight / 2;
+                drawText(ctx, "".concat(round.number), tableX + roundColW / 2, rowCenterY, {
+                    color: "#000000",
+                    weight: 700,
+                    size: imageSmallFont
+                });
+                for (var index = 0; index < playerCount; index += 1) {
+                    var value = scores[index];
+                    drawText(ctx, value === null ? "-" : signedImage(value), tableX + roundColW + playerColW * index + playerColW / 2, rowCenterY, {
+                        color: "#000000",
+                        size: imageValueFont
+                    });
+                }
+            }
+        }
+        dataUrl = canvas.toDataURL("image/png");
+    }
+    catch (error) {
+        console.error(error);
+        alert("画像生成に失敗しました。入力回数を減らすか、Safariで再読み込みしてからもう一度お試しください。");
+        return;
+    }
+    scoreImage.src = dataUrl;
+    downloadImage.href = dataUrl;
+    imagePreview.classList.add("show");
+    imagePreview.scrollIntoView(true);
+}
+
+function applyThemeMode() {
+    if (state.themeMode === "dark") {
+        document.body.classList.add("theme-dark");
+    }
+    else {
+        document.body.classList.remove("theme-dark");
+    }
+}
+function renderThemeModeButton() {
+    var dark = state.themeMode === "dark";
+    themeModeToggleButton.classList.toggle("active", dark);
+    themeModeToggleButton.textContent = dark ? "ダーク" : "ライト";
+}
+function render() {
+    ensureInitialRound();
+    var settingsLocked = Boolean(state.settingsLocked);
+    document.querySelectorAll(".setting-card").forEach(function (card) {
+        card.classList.toggle("locked", settingsLocked);
+    });
+    rateInput.value = state.rate;
+    rateInput.disabled = settingsLocked;
+    playerInputs.forEach(function (input, index) {
+        var _a;
+        input.value = (_a = state.players[index]) !== null && _a !== void 0 ? _a : "";
+        input.disabled = settingsLocked;
+    });
+    renderSettingsLockButton();
+    applyThemeMode();
+    renderThemeModeButton();
+    renderTotals();
+    renderRounds();
+    // もし現在ポップアップが開いているなら、ポップアップ内の表示も同期更新する
+    if (currentInPopupRoundIndex !== null) {
+        updateModalDisplay();
+    }
+}
+function renderSettingsLockButton() {
+    var locked = Boolean(state.settingsLocked);
+    settingsLockToggleButton.classList.toggle("locked", locked);
+    settingsLockToggleButton.textContent = locked ? "入力ロック解除" : "入力ロック";
+}
+function renderScoreInputModeButton() {
+    var textMode = Boolean(state.scoreInputTextMode);
+    scoreInputModeToggleButton.classList.toggle("active", textMode);
+    scoreInputModeToggleButton.textContent = textMode ? "点数入力文字" : "点数入力数字";
+}
+function renderTotals() {
+    var rawTotals = totals();
+    // rateLabel.textContent = "\u63DB\u7B97 ".concat(state.rate, "x");
+    rateLabel.textContent = "Rate ".concat(state.rate, "x");
+    totalsEl.innerHTML = "";
+    rawTotals.forEach(function (total, index) {
+        var converted = total * state.rate;
+        var card = document.createElement("div");
+        card.className = "total-card";
+        card.innerHTML = "\n          <div class=\"name\">".concat(escapeHtml(state.players[index] || "P".concat(index + 1)), "</div>\n          <div class=\"score ").concat(scoreClass(total), "\">").concat(signed(total), "</div>\n          <div class=\"money ").concat(scoreClass(converted), "\">").concat(yen(converted), "</div>\n        ");
+        totalsEl.appendChild(card);
+    });
+}
+// 元のHTML文字列生成ロジックを1文字も崩さず共通化
+function makeRoundHtml(round, roundIndex) {
+    var scores = completedScores(round);
+    var balance = scores.reduce(function (total, value) { return total + (value !== null && value !== void 0 ? value : 0); }, 0);
+    var isLocked = Boolean(round.locked);
+    var isCurrentlyPopup = (currentInPopupRoundIndex === roundIndex);
+    var scoreInputModeAttr = isCurrentlyPopup
+        ? 'readonly inputmode="none" class="popup-score-input"'
+        : '';
+    var rows = state.players.map(function (player, playerIndex) {
+        var _a;
+        var inputValue = (_a = round.inputs[playerIndex]) !== null && _a !== void 0 ? _a : "";
+        var autoValue = scores[playerIndex];
+        return "\n          <div class=\"input-card ".concat(isLocked ? "locked" : "", "\">\n            <button \n              type=\"button\" \n              class=\"player-btn\" \n              data-invert-round=\"").concat(roundIndex, "\" \n              data-invert-player=\"").concat(playerIndex, "\"\n              ").concat(isLocked ? "disabled" : "", "\n            >\n              ").concat(escapeHtml(player || "P".concat(playerIndex + 1)), "\n            </button>\n            <input\n              type=\"text\"\n              ").concat(scoreInputModeAttr, "\n              maxlength=\"5\"\n              pattern=\"-?[0-9]{0,4}\"\n              value=\"").concat(escapeHtml(String(inputValue)), "\"\n              data-round=\"").concat(roundIndex, "\"\n              data-player=\"").concat(playerIndex, "\"\n              aria-label=\"").concat(escapeHtml((player || "P".concat(playerIndex + 1)) + " " + round.number + "回"), "\"\n              ").concat(isLocked ? "disabled" : "", "\n            >\n            <div class=\"auto ").concat(scoreClass(autoValue !== null && autoValue !== void 0 ? autoValue : 0), "\" data-player-auto=\"").concat(playerIndex, "\">").concat(autoValue === null ? "-" : signed(autoValue), "</div>\n          </div>\n        ");
+    }).join("");
+    // 指示：メイン画面では「○回目入力」ボタンだけを表示し、Pop画面では従来通りの操作ボタンを表示する
+    var headActionsHtml = isCurrentlyPopup
+        ? "\n            <div class=\"modal-actions\">\n              <button type=\"button\" class=\"danger small round-clear\" data-round-clear=\"".concat(roundIndex, "\">\u70B9\u6570\u30AF\u30EA\u30A2</button>\n              <button type=\"button\" class=\"small round-restore\" data-round-restore=\"").concat(roundIndex, "\" ").concat(popupClearedInputs ? "" : "disabled", ">\u5F97\u70B9\u5FA9\u6D3B</button>\n              <button type=\"button\" class=\"small round-lock editing-active\" data-round-lock=\"").concat(roundIndex, "\">\u5165\u529B\u5B8C\u4E86</button>\n              <button type=\"button\" class=\"small modal-cancel\" data-modal-cancel=\"1\">キャンセル</button>\n            </div>\n          ")
+        : "\n            <button type=\"button\" class=\"small round-lock locked\" data-round-lock=\"".concat(roundIndex, "\">").concat(round.number, "\u56DE\u76EE\u5165\u529B</button>\n          ");
+    if (isCurrentlyPopup) {
+        return "\n          <div class=\"modal-info-head\">\n            <div class=\"modal-round-title\">".concat(round.number, "\u56DE\u76EE</div>\n            <div class=\"balance ").concat(balance === 0 ? "" : "warn", "\">").concat(balance === 0 ? "±0" : "\u5DEE\u984D ".concat(signed(balance)), "</div>\n          </div>\n          ").concat(headActionsHtml, "\n          <div class=\"round-grid\">").concat(rows, "</div>\n        ");
+    }
+    return "\n        <div class=\"round-head\">\n          <div class=\"round-title\">\n            ".concat(headActionsHtml, "\n          </div>\n          <div class=\"balance ").concat(balance === 0 ? "" : "warn", "\">").concat(balance === 0 ? "±0" : "\u5DEE\u984D ".concat(signed(balance)), "</div>\n        </div>\n        <div class=\"round-grid\">").concat(rows, "</div>\n      ");
+}
+function renderRounds() {
+    ensureInitialRound();
+    var html = '<div class="score-table-wrap"><table class="score-entry-table"><thead><tr>';
+    html += '<th class="round-col"><button id="addRoundTable" type="button" class="add-round-table-btn">回追加</button></th>';
+    for (var p = 0; p < playerCount; p += 1) {
+        html += '<th><div class="player-head">' + escapeHtml(state.players[p] || "P".concat(p + 1)) + '</div></th>';
+    }
+    html += '</tr></thead><tbody>';
+    state.rounds.forEach(function (round, roundIndex) {
+        var scores = completedScores(round);
+        html += '<tr class="round" data-round-index="' + roundIndex + '">';
+        html += '<td class="round-col"><button type="button" class="round-button-cell" data-round-lock="' + roundIndex + '">' + round.number + '回</button></td>';
+        for (var index = 0; index < playerCount; index += 1) {
+            var value = scores[index];
+            var displayValue = value === null ? '' : signed(value);
+            html += '<td><div class="score-cell ' + scoreClass(value !== null && value !== void 0 ? value : 0) + '" data-round-lock="' + roundIndex + '">' + escapeHtml(displayValue) + '</div></td>';
+        }
+        html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    roundsEl.innerHTML = html;
+    var addRoundTableButton = document.getElementById("addRoundTable");
+    if (addRoundTableButton) {
+        addRoundTableButton.onclick = function () {
+            addRoundButton.click();
+        };
+    }
+}
+// 指示：ポップ画面（モーダル）を開く処理
+function openRoundPopup(roundIndex) {
+    popupBackupState = deepClone(state); // 開く直前の状態を退避。「キャンセル」でここへ戻す
+    popupClearedInputs = null;
+    activePopupPlayerIndex = 0;
+    currentInPopupRoundIndex = roundIndex;
+    state.rounds[roundIndex].locked = false; // ロックを自動解除して編集状態へ
+    document.body.classList.add("modal-open");
+    setPopupZoomLock(true);
+    modalOverlay.classList.add("show");
+    updateModalDisplay();
+}
+// 指示：ポップ画面（モーダル）を閉じる処理
+// ポップアップを閉じる関数（引数 `isCancel` が true なら入力を破棄）
+function closeRoundPopup(isCancel, addNextIfLast) {
+    if (isCancel === void 0) { isCancel = false; }
+    if (addNextIfLast === void 0) { addNextIfLast = false; }
+    if (currentInPopupRoundIndex !== null) {
+        var closingRoundIndex = currentInPopupRoundIndex;
+        if (isCancel && popupBackupState) {
+            // 入力をキャンセルする場合、ポップアップを開く直前の状態へ戻す
+            state = deepClone(popupBackupState);
+        }
+        else {
+            state.rounds[closingRoundIndex].locked = true;
+            if (addNextIfLast && closingRoundIndex === state.rounds.length - 1) {
+                state.rounds.push(createNextRound());
+            }
+        }
+        saveState();
+    }
+    document.body.classList.remove("modal-open");
+    setPopupZoomLock(false);
+    modalOverlay.classList.remove("show");
+    currentInPopupRoundIndex = null;
+    popupBackupState = null;
+    popupClearedInputs = null;
+    modalContainer.innerHTML = "";
+    // iOS9 Safari対策：Pop閉じ直後にメイン一覧を確実に通常表示へ戻す
+    render();
+    setTimeout(function () {
+        renderTotals();
+        renderRounds();
+    }, 0);
+}
+
+function makeTenKeyHtml() {
+    return "\n      <div class=\"tenkey-wrap\">\n        <table class=\"tenkey-table\" aria-label=\"点数入力テンキー\">\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"7\">7</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"8\">8</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"9\">9</button></td>\n            <td><button type=\"button\" class=\"tenkey-key small-label\" data-tenkey=\"clear\">Clear</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"4\">4</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"5\">5</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"6\">6</button></td>\n            <td><button type=\"button\" class=\"tenkey-key backtab-key\" data-tenkey=\"backtab\">Back Tab</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"1\">1</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"2\">2</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"3\">3</button></td>\n            <td rowspan=\"2\"><button type=\"button\" class=\"tenkey-key return-key\" data-tenkey=\"return\">Return</button></td>\n          </tr>\n          <tr>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"sign\">±</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"0\">0</button></td>\n            <td><button type=\"button\" class=\"tenkey-key\" data-tenkey=\"back\">←</button></td>\n          </tr>\n        </table>\n      </div>\n    ";
+}
+function getPopupInput(playerIndex) {
+    if (currentInPopupRoundIndex === null)
+        return null;
+    return modalContainer.querySelector("input[data-round=\"".concat(currentInPopupRoundIndex, "\"][data-player=\"").concat(playerIndex, "\"]"));
+}
+
+function setActivePopupPlayer(playerIndex) {
+    if (currentInPopupRoundIndex === null)
+        return;
+    if (!Number.isFinite(Number(playerIndex)))
+        playerIndex = 0;
+    activePopupPlayerIndex = Math.max(0, Math.min(playerCount - 1, Number(playerIndex)));
+    var inputs = modalContainer.querySelectorAll("input[data-round=\"".concat(currentInPopupRoundIndex, "\"]"));
+    inputs.forEach(function (input) {
+        input.classList.remove("active");
+    });
+    var activeInput = getPopupInput(activePopupPlayerIndex);
+    if (activeInput) {
+        activeInput.classList.add("active");
+        activeInput.focus();
+        try { activeInput.select(); } catch (_a) {}
+        popupReplaceOnNextDigit = true;
+    }
+}
+
+function sanitizePopupRaw(raw) {
+    raw = String(raw || "");
+    raw = raw.replace(/[^\d-]/g, "");
+    raw = raw.replace(/(?!^)-/g, "");
+    var sign = raw.startsWith("-") ? "-" : "";
+    var digits = raw.replace("-", "").slice(0, 4);
+    return sign + digits;
+}
+
+function applyPopupRawValue(raw) {
+    if (currentInPopupRoundIndex === null)
+        return;
+    var round = state.rounds[currentInPopupRoundIndex];
+    if (!round)
+        return;
+    raw = sanitizePopupRaw(raw);
+    var input = getPopupInput(activePopupPlayerIndex);
+    if (input) {
+        input.value = raw;
+    }
+    if (raw === "" || raw === "-") {
+        round.inputs[activePopupPlayerIndex] = null;
+    }
+    else {
+        round.inputs[activePopupPlayerIndex] = Number(raw);
+    }
+    var mainInput = roundsEl.querySelector("input[data-round=\"".concat(currentInPopupRoundIndex, "\"][data-player=\"").concat(activePopupPlayerIndex, "\"]"));
+    if (mainInput) {
+        mainInput.value = raw;
+    }
+    saveState();
+    hideImagePreview();
+    renderTotals();
+    updateRoundDisplay(currentInPopupRoundIndex);
+}
+
+function movePopupInputNext(step) {
+    if (step === void 0) { step = 1; }
+    if (currentInPopupRoundIndex === null)
+        return;
+    var next = (activePopupPlayerIndex + step + playerCount) % playerCount;
+    setActivePopupPlayer(next);
+}
+
+function handleTenKey(key) {
+    if (currentInPopupRoundIndex === null)
+        return;
+    var input = getPopupInput(activePopupPlayerIndex);
+    var raw = input ? String(input.value || "") : "";
+    if (/^[0-9]$/.test(key)) {
+        // Ver.1260: 全選択状態で数字を押した時は置換。
+        // ただし直前値がマイナスなら符号は維持する。
+        // 例: -16 → 1 = -1、続けて 5 = -15
+        var sign = raw.startsWith("-") ? "-" : "";
+        var digits = raw.replace("-", "");
+        if (popupReplaceOnNextDigit) {
+            digits = "";
+            popupReplaceOnNextDigit = false;
+        }
+        if (digits.length >= 4)
+            return;
+        applyPopupRawValue(sign + digits + key);
+        return;
+    }
+    if (key === "sign") {
+        popupReplaceOnNextDigit = false;
+        if (raw.startsWith("-")) {
+            applyPopupRawValue(raw.slice(1));
+        }
+        else {
+            applyPopupRawValue("-" + raw);
+        }
+        return;
+    }
+    if (key === "back") {
+        popupReplaceOnNextDigit = false;
+        applyPopupRawValue(raw.slice(0, -1));
+        return;
+    }
+    if (key === "clear") {
+        popupReplaceOnNextDigit = false;
+        applyPopupRawValue("");
+        return;
+    }
+    if (key === "backtab") {
+        movePopupInputNext(-1);
+        return;
+    }
+    if (key === "return") {
+        movePopupInputNext(1);
+        return;
+    }
+}
+
+// ポップアップ内の表示を同期・更新する処理
+function updateModalDisplay() {
+    if (currentInPopupRoundIndex === null)
+        return;
+    var round = state.rounds[currentInPopupRoundIndex];
+    modalContainer.innerHTML = "\n        <div class=\"round\" data-round-index=\"".concat(currentInPopupRoundIndex, "\">\n          ").concat(makeRoundHtml(round, currentInPopupRoundIndex), "\n        </div>\n      ").concat(makeTenKeyHtml());
+    applyPopupTabStops();
+    setActivePopupPlayer(activePopupPlayerIndex);
+    // 専用テンキー版では setActivePopupPlayer() がフォーカスと選択を行う
+}
+function updateRoundDisplay(roundIndex) {
+    var round = state.rounds[roundIndex];
+    if (!round)
+        return;
+    // iOS9対策：Pop編集中はメイン側を書き換えない。
+    // currentInPopupRoundIndex が有効な状態で makeRoundHtml() を使うと、
+    // Pop用ボタンがメイン画面へ残ることがあるため。
+    if (currentInPopupRoundIndex !== roundIndex) {
+        var roundEl = roundsEl.querySelector(".round[data-round-index=\"".concat(roundIndex, "\"]"));
+        if (roundEl) {
+            roundEl.innerHTML = makeRoundHtml(round, roundIndex);
+        }
+    }
+    // ポップアップ画面側が開いているなら、そちらの合計値や補完文字表示も同期更新
+    if (currentInPopupRoundIndex === roundIndex) {
+        var scores = completedScores(round);
+        var balance = scores.reduce(function (total, value) { return total + (value !== null && value !== void 0 ? value : 0); }, 0);
+        var modalBalanceEl = modalContainer.querySelector(".balance");
+        if (modalBalanceEl) {
+            modalBalanceEl.classList.toggle("warn", balance !== 0);
+            modalBalanceEl.textContent = balance === 0 ? "±0" : "\u5DEE\u984D ".concat(signed(balance));
+        }
+        scores.forEach(function (value, playerIndex) {
+            var autoEl = modalContainer.querySelector(".auto[data-player-auto=\"".concat(playerIndex, "\"]"));
+            if (!autoEl)
+                return;
+            autoEl.className = "auto ".concat(scoreClass(value !== null && value !== void 0 ? value : 0));
+            autoEl.textContent = value === null ? "-" : signed(value);
+        });
+    }
+}
+function refreshPopupRoundOnly(roundIndex) {
+    if (currentInPopupRoundIndex !== roundIndex)
+        return;
+    var round = state.rounds[roundIndex];
+    if (!round)
+        return;
+    modalContainer.querySelectorAll("input[data-round=\"".concat(roundIndex, "\"]")).forEach(function (input) {
+        var playerIndex = Number(input.dataset.player);
+        var value = round.inputs[playerIndex];
+        input.value = value === null ? "" : String(value);
+    });
+    var scores = completedScores(round);
+    var balance = scores.reduce(function (total, value) { return total + (value !== null && value !== void 0 ? value : 0); }, 0);
+    var modalBalanceEl = modalContainer.querySelector(".balance");
+    if (modalBalanceEl) {
+        modalBalanceEl.classList.toggle("warn", balance !== 0);
+        modalBalanceEl.textContent = balance === 0 ? "±0" : "\u5DEE\u984D ".concat(signed(balance));
+    }
+    scores.forEach(function (value, playerIndex) {
+        var autoEl = modalContainer.querySelector(".auto[data-player-auto=\"".concat(playerIndex, "\"]"));
+        if (!autoEl)
+            return;
+        autoEl.className = "auto ".concat(scoreClass(value !== null && value !== void 0 ? value : 0));
+        autoEl.textContent = value === null ? "-" : signed(value);
+    });
+    var restoreButton = modalContainer.querySelector("button[data-round-restore=\"".concat(roundIndex, "\"]"));
+    if (restoreButton) {
+        restoreButton.disabled = !popupClearedInputs;
+        restoreButton.tabIndex = -1;
+    }
+}
+function escapeHtml(value) {
+    value = String(value);
+    return value
+        .split("&").join("&amp;")
+        .split("<").join("&lt;")
+        .split(">").join("&gt;")
+        .split('"').join("&quot;")
+        .split("'").join("&#039;");
+}
+rateInput.addEventListener("input", function (event) {
+    if (state.settingsLocked) {
+        render();
+        return;
+    }
+    state.rate = Number(event.target.value) || 0;
+    saveState();
+    hideImagePreview();
+    renderTotals();
+});
+playerInputs.forEach(function (input, index) {
+    input.addEventListener("input", function (event) {
+        if (state.settingsLocked) {
+            render();
+            return;
+        }
+        state.players[index] = event.target.value;
+        saveState();
+        hideImagePreview();
+        renderTotals();
+        renderRounds();
+    });
+});
+__spreadArray([rateInput], playerInputs, true).forEach(function (input) {
+    input.addEventListener("focusin", function (event) {
+        var target = event.target;
+        if (!(target instanceof HTMLInputElement))
+            return;
+        if (target.disabled)
+            return;
+        applyInputModeSelection(target);
+    });
+    input.addEventListener("pointerup", function (event) {
+        var target = event.target;
+        if (!(target instanceof HTMLInputElement))
+            return;
+        if (target.disabled)
+            return;
+        applyInputModeSelection(target);
+    });
+});
+// メイン画面およびポップアップ画面の双方からの数値入力を一括して安全に受け取るリスナー
+var globalInputHandler = function (event) {
+    var _a;
+    var target = event.target;
+    if (!(target instanceof HTMLInputElement))
+        return;
+    // Ver.1368: 設定PopのRate/P1〜P4は点数入力ではないため、
+    // 数字専用のglobalInputHandlerから除外する。
+    // これが無いと設定Pop内のP1〜P4も数字だけに強制変換される。
+    if (target.dataset.round === undefined || target.dataset.player === undefined)
+        return;
+    var roundIndex = Number(target.dataset.round);
+    var playerIndex = Number(target.dataset.player);
+    if ((_a = state.rounds[roundIndex]) === null || _a === void 0 ? void 0 : _a.locked) {
+        render();
+        return;
+    }
+    var raw = target.value.trim();
+    raw = raw.replace(/[^\d-]/g, "");
+    raw = raw.replace(/(?!^)-/g, "");
+    var sign = raw.startsWith("-") ? "-" : "";
+    var digits = raw.replace("-", "").slice(0, 4);
+    raw = sign + digits;
+    if (target.value !== raw) {
+        target.value = raw;
+    }
+    // 同期元のもう一方のテキストボックス（メイン画面⇔ポップ画面）の数値表示をリアルタイム追従
+    var targetContainers = [roundsEl, modalContainer];
+    targetContainers.forEach(function (container) {
+        var sisterInput = container.querySelector("input[data-round=\"".concat(roundIndex, "\"][data-player=\"").concat(playerIndex, "\"]"));
+        if (sisterInput && sisterInput !== target) {
+            sisterInput.value = raw;
+        }
+    });
+    if (raw === "" || raw === "-") {
+        state.rounds[roundIndex].inputs[playerIndex] = null;
+    }
+    else {
+        state.rounds[roundIndex].inputs[playerIndex] = Number(raw);
+    }
+    saveState();
+    hideImagePreview();
+    renderTotals();
+    updateRoundDisplay(roundIndex);
+};
+roundsEl.addEventListener("input", globalInputHandler);
+modalContainer.addEventListener("input", globalInputHandler);
+var globalFocusHandler = function (event) {
+    var target = event.target;
+    if (!(target instanceof HTMLInputElement))
+        return;
+    if (target.disabled)
+        return;
+    if (currentInPopupRoundIndex !== null && target.dataset.player !== undefined) {
+        setActivePopupPlayer(Number(target.dataset.player));
+    }
+    applyInputModeSelection(target);
+};
+roundsEl.addEventListener("focusin", globalFocusHandler);
+modalContainer.addEventListener("focusin", globalFocusHandler);
+roundsEl.addEventListener("pointerup", globalFocusHandler);
+modalContainer.addEventListener("pointerup", globalFocusHandler);
+modalContainer.addEventListener("keydown", handlePopupTabKey);
+// メイン画面およびポップアップ画面の双方からのクリックを安全に統合処理する共通コアロジック
+function handleGlobalClick(target) {
+    var _a;
+    if (target instanceof HTMLInputElement && currentInPopupRoundIndex !== null && target.dataset.player !== undefined) {
+        setActivePopupPlayer(Number(target.dataset.player));
+        return;
+    }
+    if (target instanceof HTMLButtonElement && target.dataset.tenkey !== undefined) {
+        handleTenKey(target.dataset.tenkey);
+        return;
+    }
+    // 1. 名前ボタンがクリックされた時の符号反転処理
+    if (target.classList && target.classList.contains("player-btn")) {
+        var roundIndex_1 = Number(target.dataset.invertRound);
+        var playerIndex_1 = Number(target.dataset.invertPlayer);
+        if (currentInPopupRoundIndex === roundIndex_1)
+            return;
+        if ((_a = state.rounds[roundIndex_1]) === null || _a === void 0 ? void 0 : _a.locked)
+            return;
+        var currentVal = state.rounds[roundIndex_1].inputs[playerIndex_1];
+        if (currentVal !== null && currentVal !== 0) {
+            var newVal_1 = -currentVal;
+            state.rounds[roundIndex_1].inputs[playerIndex_1] = newVal_1;
+            // ポップ画面とメイン画面の両方のテキストボックスをその場で書き換え
+            var targetContainers = [roundsEl, modalContainer];
+            targetContainers.forEach(function (container) {
+                var inputEl = container.querySelector("input[data-round=\"".concat(roundIndex_1, "\"][data-player=\"").concat(playerIndex_1, "\"]"));
+                if (inputEl) {
+                    inputEl.value = String(newVal_1);
+                }
+            });
+            saveState();
+            hideImagePreview();
+            renderTotals();
+            updateRoundDisplay(roundIndex_1);
+        }
+        return;
+    }
+    if (!(target instanceof HTMLButtonElement))
+        return;
+    // 2. Popの「キャンセル」ボタン処理
+    if (target.dataset.modalCancel !== undefined) {
+        closeRoundPopup(true);
+        return;
+    }
+    // 3. Popの「得点復活」ボタン処理
+    if (target.dataset.roundRestore !== undefined) {
+        var roundIndex = Number(target.dataset.roundRestore);
+        if (!Number.isInteger(roundIndex))
+            return;
+        var round = state.rounds[roundIndex];
+        if (!round || currentInPopupRoundIndex !== roundIndex || !popupClearedInputs)
+            return;
+        round.inputs = popupClearedInputs.slice();
+        popupClearedInputs = null;
+        hideImagePreview();
+        renderTotals();
+        refreshPopupRoundOnly(roundIndex);
+        return;
+    }
+    // 4. 「入力」/「入力完了」の鍵となるボタンが押された時の処理
+    if (target.dataset.roundLock !== undefined) {
+        var roundIndex = Number(target.dataset.roundLock);
+        if (!Number.isInteger(roundIndex))
+            return;
+        // 指示：ポップアップ画面で「入力完了」がクリックされた場合はポップアップを閉じる
+        if (currentInPopupRoundIndex === roundIndex) {
+            closeRoundPopup(false, true);
+        }
+        else {
+            // メイン画面で「入力」がクリックされた場合は、元の画面を維持してポップアップを開く
+            openRoundPopup(roundIndex);
+        }
+        return;
+    }
+    // 3. 各回の「点数クリア」ボタン処理
+    if (target.dataset.roundClear !== undefined) {
+        var roundIndex = Number(target.dataset.roundClear);
+        if (!Number.isInteger(roundIndex))
+            return;
+        var round = state.rounds[roundIndex];
+        if (!round)
+            return;
+        // Popでの点数クリアは確認なし。直前の点数を「得点復活」用に退避する。
+        // メイン画面とは即時連動させず、「入力完了」で保存、「キャンセル」で破棄する。
+        if (currentInPopupRoundIndex === roundIndex) {
+            popupClearedInputs = round.inputs.slice();
+            round.inputs = Array(playerCount).fill(null);
+            hideImagePreview();
+            renderTotals();
+            refreshPopupRoundOnly(roundIndex);
+            return;
+        }
+        round.inputs = Array(playerCount).fill(null);
+        round.locked = true;
+        saveState();
+        hideImagePreview();
+        renderTotals();
+        renderRounds();
+        return;
+    }
+}
+roundsEl.addEventListener("click", function (event) { return handleGlobalClick(event.target); });
+modalContainer.addEventListener("click", function (event) { return handleGlobalClick(event.target); });
+// Ver.1335: iOS Safariのテンキー連打によるダブルタップ拡大を抑止。
+// click処理は既存の handleGlobalClick に任せるため、ここでは拡大だけ止める。
+var lastTenkeyTouchTime = 0;
+modalContainer.addEventListener("touchend", function (event) {
+    var target = event.target;
+    if (!(target instanceof HTMLElement))
+        return;
+    if (!target.classList || !target.classList.contains("tenkey-key"))
+        return;
+    var now = Date.now();
+    if (now - lastTenkeyTouchTime < 450) {
+        event.preventDefault();
+        handleGlobalClick(target);
+    }
+    lastTenkeyTouchTime = now;
+}, false);
+
+addRoundButton.addEventListener("click", function () {
+    ensureInitialRound();
+    state.rounds.push(createNextRound());
+    saveState();
+    hideImagePreview();
+    render();
+    setTimeout(function () {
+        var targetRound = roundsEl.querySelector('.round[data-round-index="' + (state.rounds.length - 1) + '"]');
+        if (targetRound) targetRound.scrollIntoView(false);
+    }, 0);
+});
+function lockAllInputs() {
+    if (!state.settingsLocked) {
+        state.settingsLocked = true;
+    }
+    state.rounds.forEach(function (round) {
+        if (!round.locked) {
+            round.locked = true;
+        }
+    });
+    if (currentInPopupRoundIndex !== null) {
+        document.body.classList.remove("modal-open");
+        modalOverlay.classList.remove("show");
+        currentInPopupRoundIndex = null;
+    }
+    saveState();
+    hideImagePreview();
+    render();
+}
+settingsLockToggleButton.addEventListener("click", function () {
+    var nextLocked = !Boolean(state.settingsLocked);
+    state.settingsLocked = nextLocked;
+    saveState();
+    hideImagePreview();
+    render();
+    if (!nextLocked) {
+        setTimeout(function () {
+            rateInput.focus();
+            applyInputModeSelection(rateInput);
+        }, 0);
+    }
+});
+themeModeToggleButton.addEventListener("click", function () {
+    state.themeMode = state.themeMode === "dark" ? "light" : "dark";
+    saveState();
+    applyThemeMode();
+    renderThemeModeButton();
+});
+if (toggleAllLocksButton) {
+    toggleAllLocksButton.addEventListener("click", lockAllInputs);
+}
+function openSettingsPopup() {
+    currentInPopupRoundIndex = null;
+    state.settingsLocked = false;
+    popupBackupState = deepClone(state);
+    document.body.classList.add("modal-open");
+    modalOverlay.classList.add("show");
+    modalContainer.innerHTML = makeSettingsPopupHtml();
+    var first = modalContainer.querySelector("#settingsPopupRate");
+    if (first) {
+        setTimeout(function () {
+            first.focus();
+            applyInputModeSelection(first);
+        }, 0);
+    }
+}
+function closeSettingsPopup(isCancel) {
+    if (isCancel && popupBackupState) {
+        state = deepClone(popupBackupState);
+    }
+    state.settingsLocked = true;
+    popupBackupState = null;
+    document.body.classList.remove("modal-open");
+    modalOverlay.classList.remove("show");
+    modalContainer.innerHTML = "";
+    saveState();
+    hideImagePreview();
+    render();
+}
+function makeSettingsPopupHtml() {
+    // Ver.1367: P1〜P4は日本語など文字入力できるよう inputmode=text を明示。Rateのみ数字入力。
+    var html = '';
+    html += '<div class="settings-popup">';
+    html += '<div class="settings-popup-head"><div class="settings-popup-title">設定</div><button type="button" class="settings-popup-close" data-settings-cancel="1">×</button></div>';
+    html += '<div class="settings-popup-grid">';
+    html += '<div class="settings-popup-card"><label for="settingsPopupRate">Rate</label><input id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
+    html += '<div class="settings-popup-card"><label for="settingsPopupPlayer0">P1</label><input id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
+    html += '<div class="settings-popup-card"><label for="settingsPopupPlayer1">P2</label><input id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
+    html += '<div class="settings-popup-card"><label for="settingsPopupPlayer2">P3</label><input id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
+    html += '<div class="settings-popup-card"><label for="settingsPopupPlayer3">P4</label><input id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
+    html += '</div>';
+    html += '<div class="settings-popup-actions">';
+    html += '<button type="button" data-settings-ok="1">OK</button>';
+    html += '<button type="button" class="secondary" data-settings-cancel="1">キャンセル</button>';
+    html += '<button type="button" class="input-mode ' + (state.themeMode === "dark" ? "active" : "") + '" data-settings-theme="1">' + (state.themeMode === "dark" ? "ダーク" : "ライト") + '</button>';
+    html += '<button type="button" class="danger" data-settings-clear="1">全点数クリア</button>';
+    html += '<button type="button" class="danger" data-settings-all-reset="1">All Reset</button>';
+    html += '</div>';
+    html += '</div>';
+    return html;
+}
+function applySettingsPopupValues() {
+    var rateEl = document.getElementById("settingsPopupRate");
+    if (rateEl) state.rate = Number(rateEl.value) || 0;
+    for (var i = 0; i < playerCount; i += 1) {
+        var playerEl = document.getElementById("settingsPopupPlayer" + i);
+        if (playerEl) state.players[i] = playerEl.value;
+    }
+}
+jumpToSettingsButton.addEventListener("click", function () {
+    openSettingsPopup();
+});
+modalContainer.addEventListener("click", function (event) {
+    var target = event.target;
+    if (!(target instanceof HTMLElement))
+        return;
+    if (target.dataset.settingsOk) {
+        applySettingsPopupValues();
+        closeSettingsPopup(false);
+        return;
+    }
+    if (target.dataset.settingsCancel) {
+        closeSettingsPopup(true);
+        return;
+    }
+    if (target.dataset.settingsTheme) {
+        state.themeMode = state.themeMode === "dark" ? "light" : "dark";
+        saveState();
+        applyThemeMode();
+        renderThemeModeButton();
+        target.classList.toggle("active", state.themeMode === "dark");
+        target.textContent = state.themeMode === "dark" ? "ダーク" : "ライト";
+        return;
+    }
+    if (target.dataset.settingsClear) {
+        clearScoresButton.click();
+        return;
+    }
+    if (target.dataset.settingsAllReset) {
+        allResetButton.click();
+        return;
+    }
+});
+jumpToInputButton.addEventListener("click", function () {
+    var lastIndex = lastEnteredRoundIndex();
+    var targetIndex = lastIndex >= 0 ? lastIndex : 0;
+    var targetRound = roundsEl.querySelector(".round[data-round-index=\"".concat(targetIndex, "\"]"));
+    if (targetRound) {
+        targetRound.scrollIntoView(true);
+    }
+    focusRoundInput(targetIndex);
+});
+makeImageButton.addEventListener("click", function () {
+    makeScoreImage();
+});
+backToInputFromImageButton.addEventListener("click", function () {
+    imagePreview.classList.remove("show");
+    var lastIndex = lastEnteredRoundIndex();
+    var targetIndex = lastIndex >= 0 ? lastIndex : 0;
+    var targetRound = roundsEl.querySelector(".round[data-round-index=\"".concat(targetIndex, "\"]"));
+    if (targetRound) {
+        targetRound.scrollIntoView(true);
+    }
+    setTimeout(function () {
+        focusRoundInput(targetIndex);
+    }, 60);
+});
+clearScoresButton.addEventListener("click", function () {
+    if (!confirm("全ての点数をクリアしますか？ 名前とRateは残します。"))
+        return;
+
+    // iOS 9.3.5対策：
+    // 内部データだけでなく、表示中の入力欄・合計欄・Popも先に空にしてから再描画する。
+    // 古いSafariで、古いinput表示だけが残る現象を防止する。
+    currentInPopupRoundIndex = null;
+    popupBackupState = null;
+    popupClearedInputs = null;
+
+    state.rounds = [{
+            number: 1,
+            inputs: [null, null, null, null],
+            locked: true
+        }];
+    state.settingsLocked = true;
+
+    document.body.classList.remove("modal-open");
+    modalOverlay.classList.remove("show");
+    modalContainer.innerHTML = "";
+    roundsEl.innerHTML = "";
+    totalsEl.innerHTML = "";
+
+    saveState();
+    hideImagePreview();
+
+    render();
+
+    // iOS 9 Safariでは即時再描画だけだと古いDOM表示が残ることがあるため、もう一度遅延再描画する。
+    setTimeout(function () {
+        render();
+    }, 0);
+});
+
+
+allResetButton.addEventListener("click", function () {
+    if (!confirm("全てリセットしますか？ 点数・Rate・P1〜P4名を初期値に戻します。"))
+        return;
+
+    var keepThemeMode = state.themeMode || "light";
+
+    currentInPopupRoundIndex = null;
+    popupBackupState = null;
+    popupClearedInputs = null;
+
+    state = deepClone(initialState);
+    state.themeMode = keepThemeMode;
+    state.settingsLocked = true;
+    state.rounds = [{
+            number: 1,
+            inputs: [null, null, null, null],
+            locked: true
+        }];
+
+    document.body.classList.remove("modal-open");
+    setPopupZoomLock(false);
+    modalOverlay.classList.remove("show");
+    modalContainer.innerHTML = "";
+    roundsEl.innerHTML = "";
+    totalsEl.innerHTML = "";
+
+    saveState();
+    hideImagePreview();
+    render();
+
+    setTimeout(function () {
+        render();
+    }, 0);
+});
+
+function registerServiceWorkerForPwa() {
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register("./sw.js").catch(function (error) {
+                console.log("Service Worker registration failed:", error);
+            });
+        });
+    }
+}
+registerServiceWorkerForPwa();
+
+render();
+</script>
+</body>
+</html>
