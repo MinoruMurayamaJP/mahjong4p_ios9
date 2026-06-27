@@ -1171,6 +1171,35 @@
       padding-top: 10px;
     }
 
+    /* Ver.1372: プロモードはiPhone表示を最優先。タイトル文字を非表示、回ボタンは50%サイズ */
+    body.mode-pro .app-title-wrap h1 {
+      display: none;
+    }
+    body.mode-pro .app-title-wrap {
+      gap: 0;
+    }
+    body.mode-pro .score-table-wrap {
+      overflow-x: hidden;
+    }
+    body.mode-pro .score-entry-table {
+      min-width: 0;
+      border-spacing: 4px 6px;
+    }
+    body.mode-pro .score-entry-table .round-col {
+      width: 58px;
+    }
+    body.mode-pro .score-entry-table .round-button-cell,
+    body.mode-pro .score-entry-table .add-round-table-btn {
+      font-size: calc(var(--main-font-size) * 0.5);
+      letter-spacing: 0;
+    }
+    @media (max-width: 480px) {
+      body.mode-pro .score-entry-table .player-head,
+      body.mode-pro .score-entry-table .score-cell {
+        font-size: 18px;
+      }
+    }
+
     /* Ver.1371: プロモードではタイトル行から全体をスクロール対象にする */
     body.mode-pro .sticky-top {
       position: static;
@@ -1207,7 +1236,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1371</div>
+          <div class="version">Ver.260618-1372</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
