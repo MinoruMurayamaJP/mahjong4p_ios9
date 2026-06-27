@@ -1120,6 +1120,75 @@
       color: #f3f6f8;
     }
 
+
+    /* Ver.1369: 画面モード（アマ／プロ） */
+    .version-rate-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      line-height: 1.25;
+    }
+    .header-rate {
+      display: none;
+      color: var(--muted);
+      font-size: var(--button-font-size);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .top-image-button {
+      display: none;
+      min-width: 158px;
+      min-height: 48px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      background: #0d4f95;
+      color: #ffffff;
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+    body.mode-pro .top-image-button {
+      display: block;
+    }
+    body.mode-pro .header-rate {
+      display: block;
+    }
+    body.mode-pro .total-sticky-section .section-head {
+      display: none;
+    }
+    body.mode-pro #rateLabel {
+      display: none;
+    }
+    body.mode-pro #scoreInputSection .section-head {
+      display: none;
+    }
+    body.mode-pro .total-sticky-section {
+      padding-top: 10px;
+    }
+    body.mode-pro #scoreInputSection {
+      padding-top: 10px;
+    }
+
+    /* Ver.1371: プロモードではタイトル行から全体をスクロール対象にする */
+    body.mode-pro .sticky-top {
+      position: static;
+      top: auto;
+      z-index: auto;
+    }
+    @media (max-width: 620px) {
+      .top-image-button {
+        min-width: 132px;
+        min-height: 46px;
+        font-size: 16px;
+        padding: 4px 10px;
+      }
+      .version-rate-wrap {
+        line-height: 1.15;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -1135,8 +1204,12 @@
         <img class="app-icon" src="./mahjong4p_score.jpg" alt="">
         <h1>麻雀スコア</h1>
       </div>
+      <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
-        <div class="version">Ver.260618-1367</div>
+        <div class="version-rate-wrap">
+          <div class="version">Ver.260618-1371</div>
+          <div id="rateLabelTop" class="header-rate">Rate 50x</div>
+        </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
       </div>
     </header>
@@ -1171,7 +1244,6 @@
         <div class="head-actions">
           <button id="settingsLockToggle" type="button" class="small round-lock">入力ロック</button>
           <button id="themeModeToggle" type="button" class="small input-mode">ライト</button>
-//          <button id="clearScores" type="button" class="danger small">全点数クリア</button>
           <button id="clearScores" type="button" class="danger small">Score Reset</button>
           <button id="allReset" type="button" class="danger small">All Reset</button>
           <button id="jumpToInput" type="button" class="secondary small">最終入力行へ</button>
@@ -1276,6 +1348,8 @@ var initialState = {
     selectAllOnFocus: true,
     scoreInputTextMode: true,
     themeMode: "light",
+    screenMode: "ama",
+    imageMode: "M1",
     players: ["Ｐ１名", "Ｐ２名", "Ｐ３名", "Ｐ４名"],
     rounds: Array.from({ length: 1 }, function (_, index) { return ({
         number: index + 1,
@@ -1302,6 +1376,8 @@ var themeModeToggleButton = document.getElementById("themeModeToggle");
 var jumpToSettingsButton = document.getElementById("jumpToSettings");
 var jumpToInputButton = document.getElementById("jumpToInput");
 var makeImageButton = document.getElementById("makeImage");
+var makeImageTopButton = document.getElementById("makeImageTop");
+var rateLabelTop = document.getElementById("rateLabelTop");
 var imagePreview = document.getElementById("imagePreview");
 var scoreImage = document.getElementById("scoreImage");
 var downloadImage = document.getElementById("downloadImage");
@@ -1353,6 +1429,8 @@ function normalizeState(raw) {
         selectAllOnFocus: raw.selectAllOnFocus !== false,
         scoreInputTextMode: raw.scoreInputTextMode !== false,
         themeMode: raw.themeMode === "dark" ? "dark" : "light",
+        screenMode: raw.screenMode === "pro" ? "pro" : "ama",
+        imageMode: /^(M1|M2|C1|C2)$/.test(String(raw.imageMode)) ? String(raw.imageMode) : "M1",
         players: Array.isArray(raw.players) ? raw.players.slice(0, playerCount) : initialState.players.slice(),
         rounds: Array.isArray(raw.rounds) ? raw.rounds : []
     };
@@ -1511,12 +1589,12 @@ function drawText(ctx, text, x, y, options) {
     ctx.textBaseline = (_e = options.baseline) !== null && _e !== void 0 ? _e : "middle";
     ctx.fillText(text, x, y);
 }
-function drawReverseTitle(ctx, text, x, y, width, height) {
-    ctx.fillStyle = "#17202a";
+function drawReverseTitle(ctx, text, x, y, width, height, fillColor, textColor) {
+    ctx.fillStyle = fillColor || "#17202a";
     drawRoundRect(ctx, x, y, width, height, 8);
     ctx.fill();
     drawText(ctx, " ".concat(text, " "), x + width / 2, y + height / 2, {
-        color: "#ffffff",
+        color: textColor || "#ffffff",
         weight: 700,
         size: 108
     });
@@ -1602,8 +1680,6 @@ function makeScoreImage() {
         var gap = 28;
         var imageFont = 92;
         var imageSmallFont = 64;
-        // Ver.1295以降の画像作成専用設定。
-        // 合計欄は継続：名前は元サイズ、点数・金額は1.3倍、金額は太字。
         var imageNameFont = imageFont;
         var imageValueFont = Math.round(imageFont * 1.3);
         var imageMoneyFont = Math.round(imageFont * 1.3);
@@ -1612,13 +1688,12 @@ function makeScoreImage() {
         var headerHeight = 140;
         var bottomBlankLine = imageFont * 1.25;
         var totalSectionHeight = headerHeight + totalRowHeight * playerCount + gap;
-        // Ver.1330: 入力欄のみ、行数節約の横表形式。
-        // 入力値は非表示、補完後点数のみ表示。
         var inputHeaderRowHeight = 100;
         var inputRowHeight = 138;
         var inputTableHeight = imageRounds.length === 0 ? 74 : inputHeaderRowHeight + imageRounds.length * inputRowHeight;
         var roundsHeight = inputTableHeight;
         var cssHeight = padding * 2 + totalSectionHeight + roundsHeight + bottomBlankLine + 70;
+        var palette = imageModePalette(state.imageMode || "M1");
         var canvas = document.createElement("canvas");
         canvas.width = cssWidth * scale;
         canvas.height = cssHeight * scale;
@@ -1626,20 +1701,18 @@ function makeScoreImage() {
         canvas.style.height = "".concat(cssHeight, "px");
         var ctx = canvas.getContext("2d");
         ctx.scale(scale, scale);
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = palette.bg;
         ctx.fillRect(0, 0, cssWidth, cssHeight);
 
-        // 合計欄：現状維持
-        drawReverseTitle(ctx, "合計", padding, padding, 320, 128);
-        // drawText(ctx, "\u63DB\u7B97 ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
+        drawReverseTitle(ctx, "合計", padding, padding, 320, 128, palette.titleBg, palette.titleText);
         drawText(ctx, "Rate ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
             align: "right",
             size: imageSmallFont,
-            color: "#000000"
+            color: palette.text
         });
         var totalY = padding + headerHeight;
         drawRoundRect(ctx, padding, totalY, cssWidth - padding * 2, totalRowHeight * playerCount, 8);
-        ctx.strokeStyle = "#000000";
+        ctx.strokeStyle = palette.line;
         ctx.lineWidth = 3;
         ctx.stroke();
         for (var index = 0; index < playerCount; index += 1) {
@@ -1650,36 +1723,35 @@ function makeScoreImage() {
                 ctx.beginPath();
                 ctx.moveTo(padding + 18, rowY);
                 ctx.lineTo(cssWidth - padding - 18, rowY);
-                ctx.strokeStyle = "#000000";
+                ctx.strokeStyle = palette.line;
                 ctx.lineWidth = 3;
                 ctx.stroke();
             }
             drawText(ctx, state.players[index] || "P".concat(index + 1), padding + 28, rowY + totalRowHeight / 2, {
                 align: "left",
-                color: "#000000",
+                color: palette.text,
                 weight: 700,
                 size: imageNameFont
             });
             drawText(ctx, signedImage(total), cssWidth - padding - 620 - imagePointShift, rowY + totalRowHeight / 2, {
                 align: "right",
-                color: "#000000",
+                color: pickImageScoreColor(total, palette),
                 size: imageValueFont
             });
             drawText(ctx, yenImage(converted), cssWidth - padding - 28, rowY + totalRowHeight / 2, {
                 align: "right",
-                color: "#000000",
+                color: pickImageScoreColor(converted, palette),
                 weight: 700,
                 size: imageMoneyFont
             });
         }
 
-        // 入力欄：行数節約の横表形式、入力値なし、点数のみ
         var y = totalY + totalRowHeight * playerCount + gap + 70;
-        drawReverseTitle(ctx, "入力", padding, y - 64, 320, 128);
+        drawReverseTitle(ctx, "入力", padding, y - 64, 320, 128, palette.titleBg, palette.titleText);
         y += 100;
         if (imageRounds.length === 0) {
             drawText(ctx, "入力済みの点数はありません", cssWidth / 2, y + 24, {
-                color: "#000000",
+                color: palette.text,
                 size: imageSmallFont
             });
         }
@@ -1689,17 +1761,15 @@ function makeScoreImage() {
             var roundColW = 170;
             var playerColW = (tableW - roundColW) / playerCount;
             var tableH = inputHeaderRowHeight + imageRounds.length * inputRowHeight;
-            ctx.strokeStyle = "#000000";
+            ctx.strokeStyle = palette.line;
             ctx.lineWidth = 3;
             ctx.strokeRect(tableX, y, tableW, tableH);
 
-            // ヘッダー下線
             ctx.beginPath();
             ctx.moveTo(tableX, y + inputHeaderRowHeight);
             ctx.lineTo(tableX + tableW, y + inputHeaderRowHeight);
             ctx.stroke();
 
-            // 縦線
             var vx = tableX + roundColW;
             ctx.beginPath();
             ctx.moveTo(vx, y);
@@ -1713,7 +1783,6 @@ function makeScoreImage() {
                 ctx.stroke();
             }
 
-            // 横線（各回）
             for (var r = 1; r < imageRounds.length; r += 1) {
                 var hy = y + inputHeaderRowHeight + inputRowHeight * r;
                 ctx.beginPath();
@@ -1722,34 +1791,32 @@ function makeScoreImage() {
                 ctx.stroke();
             }
 
-            // ヘッダー
             drawText(ctx, "回", tableX + roundColW / 2, y + inputHeaderRowHeight / 2, {
-                color: "#000000",
+                color: palette.text,
                 weight: 700,
                 size: imageSmallFont
             });
             for (var index = 0; index < playerCount; index += 1) {
                 drawText(ctx, state.players[index] || "P".concat(index + 1), tableX + roundColW + playerColW * index + playerColW / 2, y + inputHeaderRowHeight / 2, {
-                    color: "#000000",
+                    color: palette.text,
                     weight: 700,
                     size: imageNameFont
                 });
             }
 
-            // 点数行
             for (var _i = 0, imageRounds_1 = imageRounds; _i < imageRounds_1.length; _i++) {
                 var round = imageRounds_1[_i];
                 var scores = completedScores(round);
                 var rowCenterY = y + inputHeaderRowHeight + inputRowHeight * _i + inputRowHeight / 2;
                 drawText(ctx, "".concat(round.number), tableX + roundColW / 2, rowCenterY, {
-                    color: "#000000",
+                    color: palette.text,
                     weight: 700,
                     size: imageSmallFont
                 });
                 for (var index = 0; index < playerCount; index += 1) {
                     var value = scores[index];
                     drawText(ctx, value === null ? "-" : signedImage(value), tableX + roundColW + playerColW * index + playerColW / 2, rowCenterY, {
-                        color: "#000000",
+                        color: value === null ? palette.text : pickImageScoreColor(value, palette),
                         size: imageValueFont
                     });
                 }
@@ -1768,6 +1835,7 @@ function makeScoreImage() {
     imagePreview.scrollIntoView(true);
 }
 
+
 function applyThemeMode() {
     if (state.themeMode === "dark") {
         document.body.classList.add("theme-dark");
@@ -1780,6 +1848,14 @@ function renderThemeModeButton() {
     var dark = state.themeMode === "dark";
     themeModeToggleButton.classList.toggle("active", dark);
     themeModeToggleButton.textContent = dark ? "ダーク" : "ライト";
+}
+function applyScreenMode() {
+    if (state.screenMode === "pro") {
+        document.body.classList.add("mode-pro");
+    }
+    else {
+        document.body.classList.remove("mode-pro");
+    }
 }
 function render() {
     ensureInitialRound();
@@ -1796,6 +1872,7 @@ function render() {
     });
     renderSettingsLockButton();
     applyThemeMode();
+    applyScreenMode();
     renderThemeModeButton();
     renderTotals();
     renderRounds();
@@ -1818,6 +1895,7 @@ function renderTotals() {
     var rawTotals = totals();
     // rateLabel.textContent = "\u63DB\u7B97 ".concat(state.rate, "x");
     rateLabel.textContent = "Rate ".concat(state.rate, "x");
+    if (rateLabelTop) rateLabelTop.textContent = "Rate ".concat(state.rate, "x");
     totalsEl.innerHTML = "";
     rawTotals.forEach(function (total, index) {
         var converted = total * state.rate;
@@ -2399,6 +2477,7 @@ themeModeToggleButton.addEventListener("click", function () {
     state.themeMode = state.themeMode === "dark" ? "light" : "dark";
     saveState();
     applyThemeMode();
+    applyScreenMode();
     renderThemeModeButton();
 });
 if (toggleAllLocksButton) {
@@ -2446,15 +2525,43 @@ function makeSettingsPopupHtml() {
     html += '</div>';
     html += '<div class="settings-popup-actions">';
     html += '<button type="button" data-settings-ok="1">OK</button>';
-    html += '<button type="button" class="secondary" data-settings-cancel="1">キャンセル</button>';
+    html += '<button type="button" class="secondary" data-settings-cancel="1">Cancel</button>';
     html += '<button type="button" class="input-mode ' + (state.themeMode === "dark" ? "active" : "") + '" data-settings-theme="1">' + (state.themeMode === "dark" ? "ダーク" : "ライト") + '</button>';
-//    html += '<button type="button" class="danger" data-settings-clear="1">全点数クリア</button>';
+    html += '<button type="button" class="input-mode ' + (state.screenMode === "pro" ? "active" : "") + '" data-settings-screen-mode="1">' + (state.screenMode === "pro" ? "プロ" : "アマ") + '</button>';
+    html += '<button type="button" class="input-mode" data-settings-image-mode="1">Image ' + state.imageMode + '</button>';
     html += '<button type="button" class="danger" data-settings-clear="1">Score Reset</button>';
     html += '<button type="button" class="danger" data-settings-all-reset="1">All Reset</button>';
     html += '</div>';
     html += '</div>';
     return html;
 }
+function nextImageMode(mode) {
+    var order = ["M1", "M2", "C1", "C2"];
+    var index = order.indexOf(mode);
+    if (index < 0) index = 0;
+    return order[(index + 1) % order.length];
+}
+function imageModePalette(mode) {
+    var darkBg = mode === "M2" || mode === "C2";
+    var colorful = mode === "C1" || mode === "C2";
+    return {
+        bg: darkBg ? "#000000" : "#ffffff",
+        text: darkBg ? "#ffffff" : "#000000",
+        line: darkBg ? "#ffffff" : "#000000",
+        titleBg: darkBg ? "#ffffff" : "#000000",
+        titleText: darkBg ? "#000000" : "#ffffff",
+        plus: "#1565c0",
+        minus: "#d32f2f",
+        colorful: colorful
+    };
+}
+function pickImageScoreColor(value, palette) {
+    if (!palette.colorful) return palette.text;
+    if (value > 0) return palette.plus;
+    if (value < 0) return palette.minus;
+    return palette.text;
+}
+
 function applySettingsPopupValues() {
     var rateEl = document.getElementById("settingsPopupRate");
     if (rateEl) state.rate = Number(rateEl.value) || 0;
@@ -2488,6 +2595,20 @@ modalContainer.addEventListener("click", function (event) {
         target.textContent = state.themeMode === "dark" ? "ダーク" : "ライト";
         return;
     }
+    if (target.dataset.settingsScreenMode) {
+        state.screenMode = state.screenMode === "pro" ? "ama" : "pro";
+        applyScreenMode();
+        target.classList.toggle("active", state.screenMode === "pro");
+        target.textContent = state.screenMode === "pro" ? "プロ" : "アマ";
+        saveState();
+        return;
+    }
+    if (target.dataset.settingsImageMode) {
+        state.imageMode = nextImageMode(state.imageMode);
+        target.textContent = "Image " + state.imageMode;
+        saveState();
+        return;
+    }
     if (target.dataset.settingsClear) {
         clearScoresButton.click();
         return;
@@ -2509,6 +2630,11 @@ jumpToInputButton.addEventListener("click", function () {
 makeImageButton.addEventListener("click", function () {
     makeScoreImage();
 });
+if (makeImageTopButton) {
+    makeImageTopButton.addEventListener("click", function () {
+        makeScoreImage();
+    });
+}
 backToInputFromImageButton.addEventListener("click", function () {
     imagePreview.classList.remove("show");
     var lastIndex = lastEnteredRoundIndex();
@@ -2562,6 +2688,7 @@ allResetButton.addEventListener("click", function () {
         return;
 
     var keepThemeMode = state.themeMode || "light";
+    var keepScreenMode = state.screenMode || "ama";
 
     currentInPopupRoundIndex = null;
     popupBackupState = null;
@@ -2569,6 +2696,7 @@ allResetButton.addEventListener("click", function () {
 
     state = deepClone(initialState);
     state.themeMode = keepThemeMode;
+    state.screenMode = keepScreenMode;
     state.settingsLocked = true;
     state.rounds = [{
             number: 1,
