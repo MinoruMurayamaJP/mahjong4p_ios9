@@ -1186,12 +1186,16 @@
       border-spacing: 4px 6px;
     }
     body.mode-pro .score-entry-table .round-col {
-      width: 58px;
+      width: 68px;
     }
     body.mode-pro .score-entry-table .round-button-cell,
     body.mode-pro .score-entry-table .add-round-table-btn {
-      font-size: calc(var(--main-font-size) * 0.5);
+      font-size: calc(var(--main-font-size) * 0.75);
       letter-spacing: 0;
+      min-height: 38px;
+      height: 38px;
+      line-height: 38px;
+      padding: 0;
     }
     @media (max-width: 480px) {
       body.mode-pro .score-entry-table .player-head,
@@ -1236,7 +1240,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1372</div>
+          <div class="version">Ver.260618-1373</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1961,7 +1965,7 @@ function makeRoundHtml(round, roundIndex) {
 function renderRounds() {
     ensureInitialRound();
     var html = '<div class="score-table-wrap"><table class="score-entry-table"><thead><tr>';
-    html += '<th class="round-col"><button id="addRoundTable" type="button" class="add-round-table-btn">回追加</button></th>';
+    html += '<th class="round-col"><button id="addRoundTable" type="button" class="add-round-table-btn">追加</button></th>';
     for (var p = 0; p < playerCount; p += 1) {
         html += '<th><div class="player-head">' + escapeHtml(state.players[p] || "P".concat(p + 1)) + '</div></th>';
     }
