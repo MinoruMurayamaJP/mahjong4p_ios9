@@ -435,6 +435,10 @@
       white-space: nowrap;
     }
 
+    .modal-actions.modal-actions-two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     @media (max-width: 520px) {
       .modal-actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1312,7 +1316,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1377</div>
+          <div class="version">Ver.260618-1379</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1947,7 +1951,9 @@ function makeScoreImage() {
                 });
                 for (var index = 0; index < playerCount; index += 1) {
                     var value = scores[index];
-                    drawText(ctx, value === null ? "-" : signedImage(value), tableX + roundColW + playerColW * index + playerColW / 2, rowCenterY, {
+                    var cellRightX = tableX + roundColW + playerColW * (index + 1) - Math.round(imageValueFont * 0.65);
+                    drawText(ctx, value === null ? "-" : signedImage(value), cellRightX, rowCenterY, {
+                        align: "right",
                         color: value === null ? palette.text : pickImageScoreColor(value, palette),
                         size: imageValueFont
                     });
@@ -2067,7 +2073,7 @@ function makeRoundHtml(round, roundIndex) {
     }).join("");
     // 指示：メイン画面では「○回目入力」ボタンだけを表示し、Pop画面では従来通りの操作ボタンを表示する
     var headActionsHtml = isCurrentlyPopup
-        ? "\n            <div class=\"modal-actions\">\n              <button type=\"button\" class=\"danger small round-clear\" data-round-clear=\"".concat(roundIndex, "\">\u70B9\u6570\u30AF\u30EA\u30A2</button>\n              <button type=\"button\" class=\"small round-restore\" data-round-restore=\"").concat(roundIndex, "\" ").concat(popupClearedInputs ? "" : "disabled", ">\u5F97\u70B9\u5FA9\u6D3B</button>\n              <button type=\"button\" class=\"small round-lock editing-active\" data-round-lock=\"").concat(roundIndex, "\">\u5165\u529B\u5B8C\u4E86</button>\n              <button type=\"button\" class=\"small modal-cancel\" data-modal-cancel=\"1\">キャンセル</button>\n            </div>\n          ")
+        ? "\n            <div class=\"modal-actions modal-actions-two\">\n              <button type=\"button\" class=\"small modal-cancel\" data-modal-cancel=\"1\">キャンセル</button>\n              <button type=\"button\" class=\"small round-lock editing-active\" data-round-lock=\"".concat(roundIndex, "\">\u5165\u529B\u5B8C\u4E86</button>\n            </div>\n          ")
         : "\n            <button type=\"button\" class=\"small round-lock locked\" data-round-lock=\"".concat(roundIndex, "\">").concat(round.number, "\u56DE\u76EE\u5165\u529B</button>\n          ");
     if (isCurrentlyPopup) {
         return "\n          <div class=\"modal-info-head\">\n            <div class=\"modal-round-title\">".concat(round.number, "\u56DE\u76EE</div>\n            <div class=\"balance ").concat(balance === 0 ? "" : "warn", "\">").concat(balance === 0 ? "±0" : "\u5DEE\u984D ".concat(signed(balance)), "</div>\n          </div>\n          ").concat(headActionsHtml, "\n          <div class=\"round-grid\">").concat(rows, "</div>\n        ");
