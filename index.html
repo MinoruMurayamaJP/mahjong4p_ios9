@@ -228,6 +228,22 @@
       text-align: center;
     }
 
+    .total-card .name {
+      font-size: calc(var(--main-font-size) * var(--total-player-font-scale, 1));
+      min-height: calc(24px * var(--total-player-height-scale, 1));
+      line-height: calc(24px * var(--total-player-height-scale, 1));
+    }
+    .total-card .score {
+      font-size: calc(var(--main-font-size) * var(--total-score-font-scale, 1));
+      min-height: calc(28px * var(--total-score-height-scale, 1));
+      line-height: calc(28px * var(--total-score-height-scale, 1));
+    }
+    .total-card .money {
+      font-size: calc(var(--main-font-size) * var(--total-amount-font-scale, 1));
+      min-height: calc(26px * var(--total-amount-height-scale, 1));
+      line-height: calc(26px * var(--total-amount-height-scale, 1));
+    }
+
     .plus {
       color: var(--plus);
     }
@@ -1242,6 +1258,18 @@
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
+
+    .settings-popup-section-title {
+      width: 100%;
+      margin: 10px 6px 0;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+    }
+    body.theme-dark .pro-adjust-value {
+      color: #ffffff;
+    }
     @media (max-width: 480px) {
       body.mode-pro .score-entry-table .score-cell {
         font-size: 18px;
@@ -1284,7 +1312,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1376</div>
+          <div class="version">Ver.260618-1377</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1427,10 +1455,16 @@ var initialState = {
     themeMode: "light",
     screenMode: "ama",
     imageMode: "M1",
-    proPlayerFontPct: 78,
-    proPlayerHeightPct: 80,
+    proPlayerFontPct: 83,
+    proPlayerHeightPct: 60,
     proRoundFontPct: 75,
-    proRowHeightPct: 80,
+    proRowHeightPct: 60,
+    totalPlayerFontPct: 100,
+    totalPlayerHeightPct: 100,
+    totalScoreFontPct: 100,
+    totalScoreHeightPct: 100,
+    totalAmountFontPct: 100,
+    totalAmountHeightPct: 100,
     players: ["Ｐ１名", "Ｐ２名", "Ｐ３名", "Ｐ４名"],
     rounds: Array.from({ length: 1 }, function (_, index) { return ({
         number: index + 1,
@@ -1519,10 +1553,16 @@ function normalizeState(raw) {
         themeMode: raw.themeMode === "dark" ? "dark" : "light",
         screenMode: raw.screenMode === "pro" ? "pro" : "ama",
         imageMode: /^(M1|M2|C1|C2)$/.test(String(raw.imageMode)) ? String(raw.imageMode) : "M1",
-        proPlayerFontPct: clampNumber(raw.proPlayerFontPct, 50, 150, 78),
-        proPlayerHeightPct: clampNumber(raw.proPlayerHeightPct, 60, 120, 80),
+        proPlayerFontPct: clampNumber(raw.proPlayerFontPct, 50, 150, 83),
+        proPlayerHeightPct: clampNumber(raw.proPlayerHeightPct, 50, 120, 60),
         proRoundFontPct: clampNumber(raw.proRoundFontPct, 50, 150, 75),
-        proRowHeightPct: clampNumber(raw.proRowHeightPct, 60, 120, 80),
+        proRowHeightPct: clampNumber(raw.proRowHeightPct, 50, 120, 60),
+        totalPlayerFontPct: clampNumber(raw.totalPlayerFontPct, 50, 150, 100),
+        totalPlayerHeightPct: clampNumber(raw.totalPlayerHeightPct, 50, 150, 100),
+        totalScoreFontPct: clampNumber(raw.totalScoreFontPct, 50, 150, 100),
+        totalScoreHeightPct: clampNumber(raw.totalScoreHeightPct, 50, 150, 100),
+        totalAmountFontPct: clampNumber(raw.totalAmountFontPct, 50, 150, 100),
+        totalAmountHeightPct: clampNumber(raw.totalAmountHeightPct, 50, 150, 100),
         players: Array.isArray(raw.players) ? raw.players.slice(0, playerCount) : initialState.players.slice(),
         rounds: Array.isArray(raw.rounds) ? raw.rounds : []
     };
@@ -1942,10 +1982,16 @@ function renderThemeModeButton() {
     themeModeToggleButton.textContent = dark ? "ダーク" : "ライト";
 }
 function applyProLayoutSettings() {
-    document.body.style.setProperty("--pro-player-font-scale", String((state.proPlayerFontPct || 78) / 100));
-    document.body.style.setProperty("--pro-player-height-scale", String((state.proPlayerHeightPct || 80) / 100));
+    document.body.style.setProperty("--pro-player-font-scale", String((state.proPlayerFontPct || 83) / 100));
+    document.body.style.setProperty("--pro-player-height-scale", String((state.proPlayerHeightPct || 60) / 100));
     document.body.style.setProperty("--pro-round-font-scale", String((state.proRoundFontPct || 75) / 100));
-    document.body.style.setProperty("--pro-row-height-scale", String((state.proRowHeightPct || 80) / 100));
+    document.body.style.setProperty("--pro-row-height-scale", String((state.proRowHeightPct || 60) / 100));
+    document.body.style.setProperty("--total-player-font-scale", String((state.totalPlayerFontPct || 100) / 100));
+    document.body.style.setProperty("--total-player-height-scale", String((state.totalPlayerHeightPct || 100) / 100));
+    document.body.style.setProperty("--total-score-font-scale", String((state.totalScoreFontPct || 100) / 100));
+    document.body.style.setProperty("--total-score-height-scale", String((state.totalScoreHeightPct || 100) / 100));
+    document.body.style.setProperty("--total-amount-font-scale", String((state.totalAmountFontPct || 100) / 100));
+    document.body.style.setProperty("--total-amount-height-scale", String((state.totalAmountHeightPct || 100) / 100));
 }
 function applyScreenMode() {
     applyProLayoutSettings();
@@ -2621,6 +2667,14 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup-card"><label for="settingsPopupPlayer1">P2</label><input id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
     html += '<div class="settings-popup-card"><label for="settingsPopupPlayer2">P3</label><input id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
     html += '<div class="settings-popup-card"><label for="settingsPopupPlayer3">P4</label><input id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
+    html += '<div class="settings-popup-section-title">Total</div>';
+    html += '<div class="settings-popup-card pro-adjust-card"><label>Player C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="-5">－</button><span id="totalPlayerFontPctLabel" class="pro-adjust-value">' + state.totalPlayerFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="5">＋</button></div></div>';
+    html += '<div class="settings-popup-card pro-adjust-card"><label>Player H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="-5">－</button><span id="totalPlayerHeightPctLabel" class="pro-adjust-value">' + state.totalPlayerHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="5">＋</button></div></div>';
+    html += '<div class="settings-popup-card pro-adjust-card"><label>Score C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalScoreFontPct" data-delta="-5">－</button><span id="totalScoreFontPctLabel" class="pro-adjust-value">' + state.totalScoreFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalScoreFontPct" data-delta="5">＋</button></div></div>';
+    html += '<div class="settings-popup-card pro-adjust-card"><label>Score H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalScoreHeightPct" data-delta="-5">－</button><span id="totalScoreHeightPctLabel" class="pro-adjust-value">' + state.totalScoreHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalScoreHeightPct" data-delta="5">＋</button></div></div>';
+    html += '<div class="settings-popup-card pro-adjust-card"><label>Amount C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalAmountFontPct" data-delta="-5">－</button><span id="totalAmountFontPctLabel" class="pro-adjust-value">' + state.totalAmountFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalAmountFontPct" data-delta="5">＋</button></div></div>';
+    html += '<div class="settings-popup-card pro-adjust-card"><label>Amount H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalAmountHeightPct" data-delta="-5">－</button><span id="totalAmountHeightPctLabel" class="pro-adjust-value">' + state.totalAmountHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalAmountHeightPct" data-delta="5">＋</button></div></div>';
+    html += '<div class="settings-popup-section-title">Line</div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="proPlayerFontPct" data-delta="-5">－</button><span id="proPlayerFontPctLabel" class="pro-adjust-value">' + state.proPlayerFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="proPlayerFontPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="proPlayerHeightPct" data-delta="-5">－</button><span id="proPlayerHeightPctLabel" class="pro-adjust-value">' + state.proPlayerHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="proPlayerHeightPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Time C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="proRoundFontPct" data-delta="-5">－</button><span id="proRoundFontPctLabel" class="pro-adjust-value">' + state.proRoundFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="proRoundFontPct" data-delta="5">＋</button></div></div>';
@@ -2675,22 +2729,54 @@ function updateProAdjustLabels() {
     if (el) el.textContent = String(state.proRoundFontPct) + "%";
     el = document.getElementById("proRowHeightPctLabel");
     if (el) el.textContent = String(state.proRowHeightPct) + "%";
+    el = document.getElementById("totalPlayerFontPctLabel");
+    if (el) el.textContent = String(state.totalPlayerFontPct) + "%";
+    el = document.getElementById("totalPlayerHeightPctLabel");
+    if (el) el.textContent = String(state.totalPlayerHeightPct) + "%";
+    el = document.getElementById("totalScoreFontPctLabel");
+    if (el) el.textContent = String(state.totalScoreFontPct) + "%";
+    el = document.getElementById("totalScoreHeightPctLabel");
+    if (el) el.textContent = String(state.totalScoreHeightPct) + "%";
+    el = document.getElementById("totalAmountFontPctLabel");
+    if (el) el.textContent = String(state.totalAmountFontPct) + "%";
+    el = document.getElementById("totalAmountHeightPctLabel");
+    if (el) el.textContent = String(state.totalAmountHeightPct) + "%";
 }
 function adjustProSetting(key, delta) {
     if (key === "proPlayerFontPct") {
-        state.proPlayerFontPct = clampNumber((state.proPlayerFontPct || 78) + delta, 50, 150, 78);
+        state.proPlayerFontPct = clampNumber((state.proPlayerFontPct || 83) + delta, 50, 150, 83);
     }
     else if (key === "proPlayerHeightPct") {
-        state.proPlayerHeightPct = clampNumber((state.proPlayerHeightPct || 80) + delta, 60, 120, 80);
+        state.proPlayerHeightPct = clampNumber((state.proPlayerHeightPct || 60) + delta, 50, 120, 60);
     }
     else if (key === "proRoundFontPct") {
         state.proRoundFontPct = clampNumber((state.proRoundFontPct || 75) + delta, 50, 150, 75);
     }
     else if (key === "proRowHeightPct") {
-        state.proRowHeightPct = clampNumber((state.proRowHeightPct || 80) + delta, 60, 120, 80);
+        state.proRowHeightPct = clampNumber((state.proRowHeightPct || 60) + delta, 50, 120, 60);
+    }
+    else if (key === "totalPlayerFontPct") {
+        state.totalPlayerFontPct = clampNumber((state.totalPlayerFontPct || 100) + delta, 50, 150, 100);
+    }
+    else if (key === "totalPlayerHeightPct") {
+        state.totalPlayerHeightPct = clampNumber((state.totalPlayerHeightPct || 100) + delta, 50, 150, 100);
+    }
+    else if (key === "totalScoreFontPct") {
+        state.totalScoreFontPct = clampNumber((state.totalScoreFontPct || 100) + delta, 50, 150, 100);
+    }
+    else if (key === "totalScoreHeightPct") {
+        state.totalScoreHeightPct = clampNumber((state.totalScoreHeightPct || 100) + delta, 50, 150, 100);
+    }
+    else if (key === "totalAmountFontPct") {
+        state.totalAmountFontPct = clampNumber((state.totalAmountFontPct || 100) + delta, 50, 150, 100);
+    }
+    else if (key === "totalAmountHeightPct") {
+        state.totalAmountHeightPct = clampNumber((state.totalAmountHeightPct || 100) + delta, 50, 150, 100);
     }
     applyProLayoutSettings();
     updateProAdjustLabels();
+    renderTotals();
+    renderRounds();
     saveState();
 }
 function applySettingsPopupValues() {
