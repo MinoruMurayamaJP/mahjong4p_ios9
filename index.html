@@ -1366,7 +1366,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1387</div>
+          <div class="version">Ver.260618-1389</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1508,7 +1508,7 @@ var initialState = {
     scoreInputTextMode: true,
     themeMode: "light",
     screenMode: "ama",
-    imageMode: "Mono",
+    imageMode: "M1",
     proPlayerFontPct: 83,
     proPlayerHeightPct: 60,
     proRoundFontPct: 75,
@@ -1608,7 +1608,14 @@ function normalizeState(raw) {
         scoreInputTextMode: raw.scoreInputTextMode !== false,
         themeMode: raw.themeMode === "dark" ? "dark" : "light",
         screenMode: raw.screenMode === "pro" ? "pro" : "ama",
-        imageMode: (String(raw.imageMode) === "Color" || String(raw.imageMode) === "C1" || String(raw.imageMode) === "C2") ? "Color" : "Mono",
+        imageMode: (function(){
+            var im = String(raw.imageMode || "");
+            var theme = String(raw.themeMode || "light");
+            if (/^(M1|M2|C1|C2)$/.test(im)) return im;
+            if (im === "Color") return theme === "dark" ? "C2" : "C1";
+            if (im === "Mono") return theme === "dark" ? "M2" : "M1";
+            return "M1";
+        })(),
         proPlayerFontPct: clampNumber(raw.proPlayerFontPct, 50, 150, 83),
         proPlayerHeightPct: clampNumber(raw.proPlayerHeightPct, 50, 120, 60),
         proRoundFontPct: clampNumber(raw.proRoundFontPct, 50, 150, 75),
@@ -1883,7 +1890,7 @@ function makeScoreImage() {
         var inputTableHeight = imageRounds.length === 0 ? 74 : inputHeaderRowHeight + imageRounds.length * inputRowHeight;
         var roundsHeight = inputTableHeight;
         var cssHeight = padding * 2 + totalSectionHeight + roundsHeight + bottomBlankLine + 70;
-        var palette = imageModePalette(state.imageMode || "Mono", state.themeMode || "light");
+        var palette = imageModePalette(state.imageMode || "M1");
         var canvas = document.createElement("canvas");
         canvas.width = cssWidth * scale;
         canvas.height = cssHeight * scale;
@@ -2697,6 +2704,16 @@ function openSettingsPopup() {
     document.body.classList.add("modal-open");
     modalOverlay.classList.add("show");
     modalContainer.innerHTML = makeSettingsPopupHtml();
+    var p4HiddenCommand = modalContainer.querySelector("#settingsPopupPlayer3");
+    if (p4HiddenCommand) {
+        p4HiddenCommand.addEventListener("dblclick", function () {
+            var names = ["川口", "田中", "宮腰", "村山"];
+            for (var i = 0; i < playerCount; i += 1) {
+                var el = modalContainer.querySelector("#settingsPopupPlayer" + i);
+                if (el) el.value = names[i];
+            }
+        });
+    }
     var first = modalContainer.querySelector("#settingsPopupRate");
     if (first) {
         setTimeout(function () {
@@ -2758,11 +2775,14 @@ function makeSettingsPopupHtml() {
     return html;
 }
 function nextImageMode(mode) {
-    return mode === "Color" ? "Mono" : "Color";
+    var order = ["M1", "M2", "C1", "C2"];
+    var index = order.indexOf(mode);
+    if (index < 0) index = 0;
+    return order[(index + 1) % order.length];
 }
-function imageModePalette(mode, themeMode) {
-    var darkBg = themeMode === "dark";
-    var colorful = mode === "Color";
+function imageModePalette(mode) {
+    var darkBg = mode === "M2" || mode === "C2";
+    var colorful = mode === "C1" || mode === "C2";
     return {
         bg: darkBg ? "#000000" : "#ffffff",
         text: darkBg ? "#ffffff" : "#000000",
@@ -2925,6 +2945,13 @@ makeImageButton.addEventListener("click", function () {
 });
 if (makeImageTopButton) {
     makeImageTopButton.addEventListener("click", function () {
+        makeScoreImage();
+    });
+}
+if (scoreImage) {
+    scoreImage.addEventListener("dblclick", function () {
+        state.imageMode = nextImageMode(state.imageMode);
+        saveState();
         makeScoreImage();
     });
 }
