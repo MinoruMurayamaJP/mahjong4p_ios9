@@ -1366,7 +1366,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1389</div>
+          <div class="version">Ver.260618-1390</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -2704,14 +2704,42 @@ function openSettingsPopup() {
     document.body.classList.add("modal-open");
     modalOverlay.classList.add("show");
     modalContainer.innerHTML = makeSettingsPopupHtml();
+    function setHiddenPlayerNames() {
+        var names = ["川口", "田中", "宮腰", "村山"];
+        for (var i = 0; i < playerCount; i += 1) {
+            var el = modalContainer.querySelector("#settingsPopupPlayer" + i);
+            if (el) el.value = names[i];
+        }
+    }
     var p4HiddenCommand = modalContainer.querySelector("#settingsPopupPlayer3");
     if (p4HiddenCommand) {
-        p4HiddenCommand.addEventListener("dblclick", function () {
-            var names = ["川口", "田中", "宮腰", "村山"];
-            for (var i = 0; i < playerCount; i += 1) {
-                var el = modalContainer.querySelector("#settingsPopupPlayer" + i);
-                if (el) el.value = names[i];
+        p4HiddenCommand.addEventListener("dblclick", setHiddenPlayerNames);
+    }
+    var p4HiddenLabel = modalContainer.querySelector('label[for="settingsPopupPlayer3"]');
+    if (p4HiddenLabel) {
+        var p4HiddenTimer = null;
+        var clearP4HiddenTimer = function () {
+            if (p4HiddenTimer) {
+                clearTimeout(p4HiddenTimer);
+                p4HiddenTimer = null;
             }
+        };
+        var startP4HiddenTimer = function (event) {
+            if (event && event.preventDefault) event.preventDefault();
+            clearP4HiddenTimer();
+            p4HiddenTimer = setTimeout(function () {
+                p4HiddenTimer = null;
+                setHiddenPlayerNames();
+            }, 700);
+        };
+        p4HiddenLabel.addEventListener("touchstart", startP4HiddenTimer);
+        p4HiddenLabel.addEventListener("touchend", clearP4HiddenTimer);
+        p4HiddenLabel.addEventListener("touchcancel", clearP4HiddenTimer);
+        p4HiddenLabel.addEventListener("mousedown", startP4HiddenTimer);
+        p4HiddenLabel.addEventListener("mouseup", clearP4HiddenTimer);
+        p4HiddenLabel.addEventListener("mouseleave", clearP4HiddenTimer);
+        p4HiddenLabel.addEventListener("contextmenu", function (event) {
+            event.preventDefault();
         });
     }
     var first = modalContainer.querySelector("#settingsPopupRate");
