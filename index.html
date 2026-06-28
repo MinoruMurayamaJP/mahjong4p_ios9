@@ -1137,11 +1137,14 @@
       .settings-popup-card,
       .settings-popup-card.settings-rate-card,
       .settings-popup-card.settings-player-card {
-        width: calc(25% - 12px);
-        flex-basis: calc(25% - 12px);
+        width: calc(50% - 12px);
+        flex-basis: calc(50% - 12px);
         max-width: none;
         padding: 8px 6px;
         min-height: 108px;
+      }
+      .settings-popup-line-break {
+        display: none;
       }
       .settings-popup-card.settings-player-card label { font-size: 20px; }
       .settings-popup-actions { flex-wrap: wrap; }
@@ -1361,7 +1364,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1384</div>
+          <div class="version">Ver.260618-1385</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
