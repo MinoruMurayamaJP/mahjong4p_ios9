@@ -1041,7 +1041,7 @@
     }
     .settings-popup {
       width: 100%;
-      max-width: 680px;
+      max-width: 760px;
       margin: 0 auto;
       padding: 16px;
       border: 1px solid var(--line);
@@ -1077,17 +1077,23 @@
       margin: -6px;
     }
     .settings-popup-card {
-      width: calc(20% - 12px);
+      width: calc(25% - 12px);
+      flex: 0 0 calc(25% - 12px);
       margin: 6px;
       padding: 10px;
+      min-height: 116px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcfd;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
     }
     .settings-popup-card.settings-rate-card {
-      width: 112px;
-      max-width: 112px;
-      flex: 0 0 112px;
+      width: calc(25% - 12px);
+      max-width: none;
+      flex: 0 0 calc(25% - 12px);
     }
     .settings-popup-line-break {
       flex: 0 0 100%;
@@ -1110,6 +1116,8 @@
     .settings-popup-card input {
       min-height: 44px;
       font-weight: 700;
+      width: 100%;
+      box-sizing: border-box;
     }
     .settings-popup-actions {
       display: flex;
@@ -1126,9 +1134,15 @@
       button.icon-settings { width: 46px; min-height: 46px; line-height: 46px; }
       .score-entry-table { min-width: 560px; border-spacing: 8px 7px; }
       .score-entry-table .round-col { width: 100px; }
-      .settings-popup-card { width: calc(50% - 12px); }
-      .settings-popup-card.settings-rate-card { width: 112px; flex-basis: 112px; max-width: 112px; }
-      .settings-popup-card.settings-player-card { width: calc(25% - 12px); flex-basis: calc(25% - 12px); padding: 8px 6px; }
+      .settings-popup-card,
+      .settings-popup-card.settings-rate-card,
+      .settings-popup-card.settings-player-card {
+        width: calc(25% - 12px);
+        flex-basis: calc(25% - 12px);
+        max-width: none;
+        padding: 8px 6px;
+        min-height: 108px;
+      }
       .settings-popup-card.settings-player-card label { font-size: 20px; }
       .settings-popup-actions { flex-wrap: wrap; }
       .settings-popup-actions button { flex-basis: calc(50% - 10px); }
@@ -1347,7 +1361,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1382</div>
+          <div class="version">Ver.260618-1384</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
