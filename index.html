@@ -1,6 +1,5 @@
-<html lang="ja" manifest="mahjong4p_ios9.appcache">
 <!doctype html>
-<html lang="ja">
+<html lang="ja" manifest="mahjong4p_ios9.appcache">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -602,9 +601,11 @@
 
     /* ポップアップ内の「入力完了」状態の緑色ボタンのスタイル */
     button.round-lock.editing-active {
-      background: #15395f;
+//      background: #15395f;
+      background: #000000;
       color: #ffffff;
-      border: 2px solid #15395f;
+//      border: 2px solid #15395f;
+      border: 2px solid #000000;
     }
 
     button.input-mode {
@@ -1431,7 +1432,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1395</div>
+          <div class="version">Ver.260618-1397</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -3134,32 +3135,7 @@ allResetButton.addEventListener("click", function () {
 });
 
 function registerServiceWorkerForPwa() {
-    if (!("serviceWorker" in navigator)) return;
-    var refreshing = false;
-    navigator.serviceWorker.addEventListener("controllerchange", function () {
-        if (refreshing) return;
-        refreshing = true;
-        window.location.reload();
-    });
-    window.addEventListener("load", function () {
-        navigator.serviceWorker.register("./sw.js").then(function (registration) {
-            registration.update();
-            if (registration.waiting) {
-                registration.waiting.postMessage({ type: "SKIP_WAITING" });
-            }
-            registration.addEventListener("updatefound", function () {
-                var worker = registration.installing;
-                if (!worker) return;
-                worker.addEventListener("statechange", function () {
-                    if (worker.state === "installed" && navigator.serviceWorker.controller) {
-                        worker.postMessage({ type: "SKIP_WAITING" });
-                    }
-                });
-            });
-        }).catch(function (error) {
-            console.log("Service Worker registration failed:", error);
-        });
-    });
+    // Ver.1396 iOS9 AppCache版：Service Workerは使わず、AppCacheでオフライン保存する。
 }
 registerServiceWorkerForPwa();
 
