@@ -1,12 +1,13 @@
 CACHE MANIFEST
 # 麻雀スコア iOS9 AppCache版
-# Ver.260618-1396
+# Ver.260618-1397
+# iOS9 金額カンマ表示修正版
 # このコメント行のバージョンを変えると、iOS9 Safariが再キャッシュしやすくなります。
 
 CACHE:
 ./
 ./index.html
-./mahjong4p_score_1396_ios9_appcache.html
+./mahjong4p_score_1397_ios9_comma_fix.html
 ./manifest.webmanifest
 ./mahjong4p_score.jpg
 ./mahjong4p_score_192.jpg
