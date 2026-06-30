@@ -1488,7 +1488,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1401</div>
+          <div class="version">Ver.260618-1402</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1872,7 +1872,9 @@ function signed(value) {
 }
 function signedImage(value) {
     if (value > 0)
-        return "+".concat(value);
+        return "＋".concat(value);
+    if (value < 0)
+        return "－".concat(Math.abs(value));
     return String(value);
 }
 function commaNumber(value) {
@@ -2144,7 +2146,7 @@ function makeScoreImage() {
                 });
                 for (var index = 0; index < playerCount; index += 1) {
                     var value = scores[index];
-                    var cellRightX = tableX + roundColW + playerColW * (index + 1) - 28;
+                    var cellRightX = tableX + roundColW + playerColW * (index + 1) - Math.round(imageValueFont * 0.42);
                     drawText(ctx, value === null ? "-" : signedImage(value), cellRightX, rowCenterY, {
                         align: "right",
                         color: value === null ? palette.text : pickImageScoreColor(value, palette),
