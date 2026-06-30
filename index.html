@@ -1303,13 +1303,26 @@
     }
     .settings-popup-actions {
       display: flex;
+      flex-wrap: wrap;
       gap: 10px;
-      margin-top: 18px;
+      margin: 14px 0 8px;
     }
     .settings-popup-actions button {
-      flex: 1 1 0;
+      flex: 1 1 calc(25% - 10px);
+      min-width: calc(25% - 10px);
       min-height: 48px;
       font-size: var(--button-font-size);
+    }
+    .settings-adjust-wrap {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
+    }
+    .settings-adjust-wrap.show {
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: -6px;
+      margin-right: -6px;
     }
     @media (max-width: 620px) {
       .app-icon { width: 36px; height: 36px; }
@@ -1335,7 +1348,7 @@
       }
       .settings-popup-card.settings-player-card label { font-size: 20px; }
       .settings-popup-actions { flex-wrap: wrap; }
-      .settings-popup-actions button { flex-basis: calc(50% - 10px); }
+      .settings-popup-actions button { flex-basis: calc(50% - 10px); min-width: calc(50% - 10px); }
     }
     body.theme-dark .score-entry-table .player-head,
     body.theme-dark .score-entry-table .score-cell {
@@ -1584,7 +1597,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260630-1412</div>
+          <div class="version">Ver.260701-1413</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -2175,7 +2188,7 @@ function makeScoreImage() {
         ctx.fillRect(0, 0, cssWidth, cssHeight);
         var createdAtText = imageCreatedAtText(new Date());
 
-        drawReverseTitle(ctx, "合計", padding, padding, 320, 128, palette.titleBg, palette.titleText);
+        drawReverseTitle(ctx, "Total", padding, padding, 320, 128, palette.titleBg, palette.titleText);
         drawText(ctx, "Rate ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
             align: "right",
             size: imageSmallFont,
@@ -2218,7 +2231,7 @@ function makeScoreImage() {
         }
 
         var y = totalY + totalRowHeight * playerCount + gap + 70;
-        drawReverseTitle(ctx, "入力", padding, y - 64, 320, 128, palette.titleBg, palette.titleText);
+        drawReverseTitle(ctx, "Line", padding, y - 64, 320, 128, palette.titleBg, palette.titleText);
         drawText(ctx, createdAtText, cssWidth - padding, y, {
             align: "right",
             size: imageSmallFont,
@@ -3043,7 +3056,7 @@ function closeSettingsPopup(isCancel) {
     render();
 }
 function makeSettingsPopupHtml() {
-    // Ver.1367: P1〜P4は日本語など文字入力できるよう inputmode=text を明示。Rateのみ数字入力。
+    // Ver.1413: ボタン列を名前の下へ移動し、AdjustでTotal/Line調整を表示／非表示にする。
     var html = '';
     html += '<div class="settings-popup">';
     html += '<div class="settings-popup-head"><div class="settings-popup-title">設定</div><button type="button" class="settings-popup-close" data-settings-cancel="1">×</button></div>';
@@ -3054,6 +3067,17 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">Ｐ２</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><div class="settings-player-title">Ｐ２</div><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer2">Ｐ３</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="1">&lt;</button><div class="settings-player-title">Ｐ３</div><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="3">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">Ｐ４</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="3" data-name-swap-to="2">&lt;</button><div class="settings-player-title" data-hidden-p4-title="1">Ｐ４</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
+    html += '</div>';
+    html += '<div class="settings-popup-actions">';
+    html += '<button type="button" data-settings-ok="1">OK</button>';
+    html += '<button type="button" class="secondary" data-settings-adjust="1">Adjust</button>';
+    html += '<button type="button" class="input-mode ' + (state.themeMode === "dark" ? "active" : "") + '" data-settings-theme="1">' + (state.themeMode === "dark" ? "ダーク" : "ライト") + '</button>';
+    html += '<button type="button" class="input-mode ' + (state.screenMode === "pro" ? "active" : "") + '" data-settings-screen-mode="1">' + (state.screenMode === "pro" ? "プロ" : "アマ") + '</button>';
+    html += '<button type="button" class="input-mode" data-settings-image-mode="1">Image ' + state.imageMode + '</button>';
+    html += '<button type="button" class="danger" data-settings-clear="1">Score Reset</button>';
+    html += '<button type="button" class="danger" data-settings-all-reset="1">All Reset</button>';
+    html += '</div>';
+    html += '<div id="settingsAdjustWrap" class="settings-adjust-wrap">';
     html += '<div class="settings-popup-section-title">Total</div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="-5">－</button><span id="totalPlayerFontPctLabel" class="pro-adjust-value">' + state.totalPlayerFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="-5">－</button><span id="totalPlayerHeightPctLabel" class="pro-adjust-value">' + state.totalPlayerHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="5">＋</button></div></div>';
@@ -3068,15 +3092,6 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup-card pro-adjust-card"><label>Time H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="proRowHeightPct" data-delta="-5">－</button><span id="proRowHeightPctLabel" class="pro-adjust-value">' + state.proRowHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="proRowHeightPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Score C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="proScoreFontPct" data-delta="-5">－</button><span id="proScoreFontPctLabel" class="pro-adjust-value">' + state.proScoreFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="proScoreFontPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Score H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="proScoreHeightPct" data-delta="-5">－</button><span id="proScoreHeightPctLabel" class="pro-adjust-value">' + state.proScoreHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="proScoreHeightPct" data-delta="5">＋</button></div></div>';
-    html += '</div>';
-    html += '<div class="settings-popup-actions">';
-    html += '<button type="button" data-settings-ok="1">OK</button>';
-    html += '<button type="button" class="secondary" data-settings-cancel="1">Cancel</button>';
-    html += '<button type="button" class="input-mode ' + (state.themeMode === "dark" ? "active" : "") + '" data-settings-theme="1">' + (state.themeMode === "dark" ? "ダーク" : "ライト") + '</button>';
-    html += '<button type="button" class="input-mode ' + (state.screenMode === "pro" ? "active" : "") + '" data-settings-screen-mode="1">' + (state.screenMode === "pro" ? "プロ" : "アマ") + '</button>';
-    html += '<button type="button" class="input-mode" data-settings-image-mode="1">Image ' + state.imageMode + '</button>';
-    html += '<button type="button" class="danger" data-settings-clear="1">Score Reset</button>';
-    html += '<button type="button" class="danger" data-settings-all-reset="1">All Reset</button>';
     html += '</div>';
     html += '</div>';
     return html;
@@ -3239,6 +3254,14 @@ modalContainer.addEventListener("click", function (event) {
     }
     if (target.dataset.settingsCancel) {
         closeSettingsPopup(true);
+        return;
+    }
+    if (target.dataset.settingsAdjust) {
+        var adjustWrap = modalContainer.querySelector("#settingsAdjustWrap");
+        if (adjustWrap) {
+            adjustWrap.classList.toggle("show");
+            target.classList.toggle("active", adjustWrap.classList.contains("show"));
+        }
         return;
     }
     if (target.dataset.settingsTheme) {
