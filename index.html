@@ -982,6 +982,7 @@
       max-width: 720px;
       margin: 0 auto;
       padding: 10px 12px;
+      justify-content: flex-start;
     }
     .app-title-wrap {
       display: flex;
@@ -1001,6 +1002,7 @@
       align-items: center;
       gap: 10px;
       flex: 0 0 auto;
+      margin-left: auto;
     }
     button.icon-settings {
       width: 52px;
@@ -1016,8 +1018,22 @@
     .sticky-inner section.total-sticky-section {
       margin-bottom: 0;
     }
-    .total-sticky-section .section-head {
-      align-items: flex-start;
+    .total-sticky-section .section-head.total-image-head {
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+    }
+    .total-sticky-section .section-head.total-image-head .head-actions {
+      order: 0;
+      justify-content: flex-start;
+      margin-left: 0;
+      margin-right: 0;
+      flex: 0 0 auto;
+    }
+    .total-sticky-section .section-head.total-image-head h2 {
+      order: 1;
+      flex: 0 0 auto;
+      margin-left: 0;
     }
     .total-sticky-section #makeImage {
       min-width: 160px;
@@ -1025,6 +1041,12 @@
       font-size: 18px;
       background: #0d4f95;
       color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-left: 10px;
+      padding-right: 10px;
     }
     .score-table-wrap {
       width: 100%;
@@ -1399,6 +1421,8 @@
       font-weight: 700;
       white-space: nowrap;
       flex: 0 0 auto;
+      margin-left: 8px;
+      margin-right: 0;
     }
     body.mode-pro .top-image-button {
       display: block;
@@ -1428,6 +1452,7 @@
     }
     body.mode-pro .app-header {
       gap: 8px;
+      justify-content: flex-start;
     }
     body.mode-pro .app-title-wrap {
       gap: 0;
@@ -1559,7 +1584,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260630-1408</div>
+          <div class="version">Ver.260630-1412</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1568,11 +1593,11 @@
 
     <div class="sticky-inner">
       <section class="total-sticky-section">
-        <div class="section-head">
-          <h2>合計</h2>
+        <div class="section-head total-image-head">
           <div class="head-actions">
             <button id="makeImage" type="button" class="small round-lock locked">画像作成</button>
           </div>
+          <h2>合計</h2>
         </div>
         <div id="rateLabel" class="muted"></div>
         <div id="totals" class="totals"></div>
@@ -1965,6 +1990,10 @@ function yen(value) {
 function yenImage(value) {
     return "¥" + commaNumber(value);
 }
+function imageCreatedAtText(date) {
+    var pad = function (value) { return value < 10 ? "0" + value : String(value); };
+    return "".concat(date.getFullYear(), "/").concat(pad(date.getMonth() + 1), "/").concat(pad(date.getDate()), " ").concat(pad(date.getHours()), ":").concat(pad(date.getMinutes()));
+}
 function scoreClass(value) {
     if (value > 0)
         return "plus";
@@ -2144,6 +2173,7 @@ function makeScoreImage() {
         ctx.scale(scale, scale);
         ctx.fillStyle = palette.bg;
         ctx.fillRect(0, 0, cssWidth, cssHeight);
+        var createdAtText = imageCreatedAtText(new Date());
 
         drawReverseTitle(ctx, "合計", padding, padding, 320, 128, palette.titleBg, palette.titleText);
         drawText(ctx, "Rate ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
@@ -2189,6 +2219,11 @@ function makeScoreImage() {
 
         var y = totalY + totalRowHeight * playerCount + gap + 70;
         drawReverseTitle(ctx, "入力", padding, y - 64, 320, 128, palette.titleBg, palette.titleText);
+        drawText(ctx, createdAtText, cssWidth - padding, y, {
+            align: "right",
+            size: imageSmallFont,
+            color: palette.text
+        });
         y += 100;
         if (imageRounds.length === 0) {
             drawText(ctx, "入力済みの点数はありません", cssWidth / 2, y + 24, {
