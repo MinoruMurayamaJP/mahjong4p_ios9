@@ -1,13 +1,6 @@
-麻雀スコア Ver.260618-1397 iOS9 AppCache版
-
-変更:
-- iOS9 Safariで金額の「,」が表示されない問題を修正
-- toLocaleString() を使わず、自前のカンマ編集に変更
-
-GitHub Pagesへアップロードするファイル:
-- index.html
-- mahjong4p_ios9.appcache
-- manifest.webmanifest
-- mahjong4p_score.jpg
-- mahjong4p_score_192.jpg
-- mahjong4p_score_512.jpg
+Ver.260618-1399
+1. 画像欄の「最終入力へ」を×化
+2. 設定の×と点数Popの×を同系統に維持
+3. iOS9向けに画像欄へ「合計」「入力」ボタンを追加
+   - 合計: 白/黒背景切替
+   - 入力: Mono/Color切替
