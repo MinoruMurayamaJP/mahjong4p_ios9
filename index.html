@@ -1273,6 +1273,7 @@
       font-weight: 700;
       line-height: 1.1;
     }
+    .settings-popup-card.settings-rate-card label,
     .settings-popup-card.settings-player-card label {
       display: none;
     }
@@ -1597,7 +1598,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260701-1413</div>
+          <div class="version">Ver.260701-1414</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -2997,7 +2998,7 @@ function openSettingsPopup() {
     modalOverlay.classList.add("show");
     modalContainer.innerHTML = makeSettingsPopupHtml();
     function setHiddenPlayerNames() {
-        var names = ["川口", "田中", "宮腰", "村山"];
+        var names = ["田中", "村山", "川口", "宮腰"];
         for (var i = 0; i < playerCount; i += 1) {
             var el = modalContainer.querySelector("#settingsPopupPlayer" + i);
             if (el) el.value = names[i];
@@ -3061,7 +3062,7 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup">';
     html += '<div class="settings-popup-head"><div class="settings-popup-title">設定</div><button type="button" class="settings-popup-close" data-settings-cancel="1">×</button></div>';
     html += '<div class="settings-popup-grid">';
-    html += '<div class="settings-popup-card settings-rate-card"><label for="settingsPopupRate">Rate</label><input id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
+    html += '<div class="settings-popup-card settings-rate-card"><label for="settingsPopupRate">Rate</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">Rate</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
     html += '<div class="settings-popup-line-break"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">Ｐ１</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">Ｐ１</div><button type="button" class="settings-name-swap" data-name-swap-from="0" data-name-swap-to="1">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">Ｐ２</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><div class="settings-player-title">Ｐ２</div><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
