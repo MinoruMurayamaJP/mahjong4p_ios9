@@ -1197,6 +1197,7 @@
       margin: 6px;
       padding: 10px;
       min-height: 116px;
+      height: 116px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: #fbfcfd;
@@ -1301,6 +1302,7 @@
         max-width: none;
         padding: 8px 6px;
         min-height: 108px;
+        height: 108px;
       }
       .settings-popup-line-break {
         flex: 0 0 100%;
@@ -1495,6 +1497,17 @@
       text-align: center;
       font-variant-numeric: tabular-nums;
     }
+    .settings-popup-card.pro-adjust-card label {
+      margin-bottom: 6px;
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 700;
+      line-height: 1.1;
+      text-align: center;
+    }
+    body.theme-dark .settings-popup-card.pro-adjust-card label {
+      color: #ffffff;
+    }
 
     .settings-popup-section-title {
       width: 100%;
@@ -1546,7 +1559,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260630-1406</div>
+          <div class="version">Ver.260630-1408</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -3002,10 +3015,10 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup-grid">';
     html += '<div class="settings-popup-card settings-rate-card"><label for="settingsPopupRate">Rate</label><input id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
     html += '<div class="settings-popup-line-break"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">P1</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">P1</div><button type="button" class="settings-name-swap" data-name-swap-from="0" data-name-swap-to="1">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">P2</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><div class="settings-player-title">P2</div><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer2">P3</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="1">&lt;</button><div class="settings-player-title">P3</div><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="3">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">P4</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="3" data-name-swap-to="2">&lt;</button><div class="settings-player-title" data-hidden-p4-title="1">P4</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">Ｐ１</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">Ｐ１</div><button type="button" class="settings-name-swap" data-name-swap-from="0" data-name-swap-to="1">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">Ｐ２</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><div class="settings-player-title">Ｐ２</div><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer2">Ｐ３</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="1">&lt;</button><div class="settings-player-title">Ｐ３</div><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="3">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">Ｐ４</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="3" data-name-swap-to="2">&lt;</button><div class="settings-player-title" data-hidden-p4-title="1">Ｐ４</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
     html += '<div class="settings-popup-section-title">Total</div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="-5">－</button><span id="totalPlayerFontPctLabel" class="pro-adjust-value">' + state.totalPlayerFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="-5">－</button><span id="totalPlayerHeightPctLabel" class="pro-adjust-value">' + state.totalPlayerHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="5">＋</button></div></div>';
