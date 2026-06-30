@@ -1234,6 +1234,39 @@
       width: 100%;
       box-sizing: border-box;
     }
+    .settings-player-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      width: 100%;
+    }
+    .settings-player-row input {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: center;
+    }
+    .settings-name-swap {
+      flex: 0 0 28px;
+      width: 28px;
+      min-height: 44px;
+      padding: 0;
+      border-radius: 0;
+      border: 1px solid #aeb6bf;
+      background: #eef2f5;
+      color: #17202a;
+      font-size: 18px;
+      line-height: 42px;
+      text-align: center;
+    }
+    .settings-name-swap:active {
+      background: #dbe2e8;
+    }
+    .settings-name-swap-placeholder {
+      flex: 0 0 28px;
+      width: 28px;
+      min-height: 44px;
+      display: block;
+    }
     .settings-popup-actions {
       display: flex;
       gap: 10px;
@@ -1290,6 +1323,14 @@
     body.theme-dark .settings-popup-card {
       background: #20272e;
       border-color: #3a424c;
+    }
+    body.theme-dark .settings-name-swap {
+      background: #2a333d;
+      color: #f3f6f8;
+      border-color: #4b5563;
+    }
+    body.theme-dark .settings-name-swap:active {
+      background: #374151;
     }
     body.theme-dark .settings-popup-close {
       color: #7a2034;
@@ -1488,7 +1529,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260630-1403</div>
+          <div class="version">Ver.260630-1404</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -2944,10 +2985,10 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup-grid">';
     html += '<div class="settings-popup-card settings-rate-card"><label for="settingsPopupRate">Rate</label><input id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
     html += '<div class="settings-popup-line-break"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">P1</label><input id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">P2</label><input id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer2">P3</label><input id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">P4</label><input id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">P1</label><div class="settings-player-row"><span class="settings-name-swap-placeholder"></span><input id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"><button type="button" class="settings-name-swap" data-name-swap-from="0" data-name-swap-to="1">&gt;</button></div></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">P2</label><div class="settings-player-row"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><input id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer2">P3</label><div class="settings-player-row"><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="1">&lt;</button><input id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="3">&gt;</button></div></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">P4</label><div class="settings-player-row"><button type="button" class="settings-name-swap" data-name-swap-from="3" data-name-swap-to="2">&lt;</button><input id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"><span class="settings-name-swap-placeholder"></span></div></div>';
     html += '<div class="settings-popup-section-title">Total</div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="-5">－</button><span id="totalPlayerFontPctLabel" class="pro-adjust-value">' + state.totalPlayerFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="-5">－</button><span id="totalPlayerHeightPctLabel" class="pro-adjust-value">' + state.totalPlayerHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="5">＋</button></div></div>';
@@ -3110,6 +3151,22 @@ modalContainer.addEventListener("click", function (event) {
     var target = event.target;
     if (!(target instanceof HTMLElement))
         return;
+    if (target.dataset.nameSwapFrom && target.dataset.nameSwapTo) {
+        var fromIndex = Number(target.dataset.nameSwapFrom);
+        var toIndex = Number(target.dataset.nameSwapTo);
+        var fromInput = modalContainer.querySelector("#settingsPopupPlayer" + fromIndex);
+        var toInput = modalContainer.querySelector("#settingsPopupPlayer" + toIndex);
+        if (fromInput && toInput) {
+            var keep = fromInput.value;
+            fromInput.value = toInput.value;
+            toInput.value = keep;
+            toInput.focus();
+            try {
+                toInput.select();
+            } catch (_a) {}
+        }
+        return;
+    }
     if (target.dataset.settingsOk) {
         applySettingsPopupValues();
         closeSettingsPopup(false);
