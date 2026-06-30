@@ -1245,9 +1245,9 @@
     .settings-player-title {
       flex: 1 1 auto;
       text-align: center;
-      color: #66758a;
-      font-size: calc(var(--button-font-size) * 0.95);
-      font-weight: 500;
+      color: var(--text);
+      font-size: var(--button-font-size);
+      font-weight: 700;
       line-height: 1.1;
     }
     .settings-popup-card.settings-player-card label {
@@ -1336,7 +1336,7 @@
       border-color: #3a424c;
     }
     body.theme-dark .settings-player-title {
-      color: #aab4c2;
+      color: #f3f6f8;
     }
     body.theme-dark .settings-name-swap {
       background: #2a333d;
@@ -1546,7 +1546,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260630-1405</div>
+          <div class="version">Ver.260630-1406</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -2946,7 +2946,7 @@ function openSettingsPopup() {
     if (p4HiddenCommand) {
         p4HiddenCommand.addEventListener("dblclick", setHiddenPlayerNames);
     }
-    var p4HiddenLabel = modalContainer.querySelector('label[for="settingsPopupPlayer3"]');
+    var p4HiddenLabel = modalContainer.querySelector('[data-hidden-p4-title="1"]');
     if (p4HiddenLabel) {
         var p4HiddenTimer = null;
         var clearP4HiddenTimer = function () {
@@ -3005,7 +3005,7 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">P1</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">P1</div><button type="button" class="settings-name-swap" data-name-swap-from="0" data-name-swap-to="1">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">P2</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><div class="settings-player-title">P2</div><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer2">P3</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="1">&lt;</button><div class="settings-player-title">P3</div><button type="button" class="settings-name-swap" data-name-swap-from="2" data-name-swap-to="3">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer2" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[2] || '') + '"></div>';
-    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">P4</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="3" data-name-swap-to="2">&lt;</button><div class="settings-player-title">P4</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
+    html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer3">P4</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="3" data-name-swap-to="2">&lt;</button><div class="settings-player-title" data-hidden-p4-title="1">P4</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer3" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[3] || '') + '"></div>';
     html += '<div class="settings-popup-section-title">Total</div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player C</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="-5">－</button><span id="totalPlayerFontPctLabel" class="pro-adjust-value">' + state.totalPlayerFontPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerFontPct" data-delta="5">＋</button></div></div>';
     html += '<div class="settings-popup-card pro-adjust-card"><label>Player H</label><div class="pro-adjust-row"><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="-5">－</button><span id="totalPlayerHeightPctLabel" class="pro-adjust-value">' + state.totalPlayerHeightPct + '%</span><button type="button" class="secondary" data-pro-adjust="totalPlayerHeightPct" data-delta="5">＋</button></div></div>';
