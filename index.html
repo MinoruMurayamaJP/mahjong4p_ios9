@@ -1598,8 +1598,8 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260701-1414</div>
-          <div id="rateLabelTop" class="header-rate">Rate 50x</div>
+          <div class="version">Ver.260701-1416</div>
+          <div id="rateLabelTop" class="header-rate">Scale 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
       </div>
@@ -1642,7 +1642,7 @@
       </div>
       <div class="settings">
         <div class="setting-card">
-          <label for="rate">Rate</label>
+          <label for="rate">Scale</label>
           <input id="rate" inputmode="numeric" type="text">
         </div>
         <div class="setting-card">
@@ -1999,10 +1999,10 @@ function commaNumber(value) {
     return sign + digits + result;
 }
 function yen(value) {
-    return "¥" + commaNumber(value);
+    return commaNumber(value) + " pt";
 }
 function yenImage(value) {
-    return "¥" + commaNumber(value);
+    return commaNumber(value) + " pt";
 }
 function imageCreatedAtText(date) {
     var pad = function (value) { return value < 10 ? "0" + value : String(value); };
@@ -2190,7 +2190,7 @@ function makeScoreImage() {
         var createdAtText = imageCreatedAtText(new Date());
 
         drawReverseTitle(ctx, "Total", padding, padding, 320, 128, palette.titleBg, palette.titleText);
-        drawText(ctx, "Rate ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
+        drawText(ctx, "Scale ".concat(state.rate, "x"), cssWidth - padding, padding + 64, {
             align: "right",
             size: imageSmallFont,
             color: palette.text
@@ -2401,8 +2401,8 @@ function renderScoreInputModeButton() {
 function renderTotals() {
     var rawTotals = totals();
     // rateLabel.textContent = "\u63DB\u7B97 ".concat(state.rate, "x");
-    rateLabel.textContent = "Rate ".concat(state.rate, "x");
-    if (rateLabelTop) rateLabelTop.textContent = "Rate ".concat(state.rate, "x");
+    rateLabel.textContent = "Scale ".concat(state.rate, "x");
+    if (rateLabelTop) rateLabelTop.textContent = "Scale ".concat(state.rate, "x");
     totalsEl.innerHTML = "";
     rawTotals.forEach(function (total, index) {
         var converted = total * state.rate;
@@ -2998,6 +2998,14 @@ function openSettingsPopup() {
     modalOverlay.classList.add("show");
     modalContainer.innerHTML = makeSettingsPopupHtml();
     function setHiddenPlayerNames() {
+        var password = prompt("隠しコマンドのパスワードを入力して下さい", "");
+        if (password === null) {
+            return;
+        }
+        if (password !== "4321") {
+            alert("パスワードが違います。");
+            return;
+        }
         var names = ["田中", "村山", "川口", "宮腰"];
         for (var i = 0; i < playerCount; i += 1) {
             var el = modalContainer.querySelector("#settingsPopupPlayer" + i);
@@ -3062,7 +3070,7 @@ function makeSettingsPopupHtml() {
     html += '<div class="settings-popup">';
     html += '<div class="settings-popup-head"><div class="settings-popup-title">設定</div><button type="button" class="settings-popup-close" data-settings-cancel="1">×</button></div>';
     html += '<div class="settings-popup-grid">';
-    html += '<div class="settings-popup-card settings-rate-card"><label for="settingsPopupRate">Rate</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">Rate</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
+    html += '<div class="settings-popup-card settings-rate-card"><label for="settingsPopupRate">Scale</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">Scale</div><button type="button" class="settings-name-swap" disabled>&gt;</button></div><input class="settings-player-name-input" id="settingsPopupRate" inputmode="numeric" type="text" value="' + escapeHtml(String(state.rate)) + '"></div>';
     html += '<div class="settings-popup-line-break"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer0">Ｐ１</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" disabled>&lt;</button><div class="settings-player-title">Ｐ１</div><button type="button" class="settings-name-swap" data-name-swap-from="0" data-name-swap-to="1">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer0" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[0] || '') + '"></div>';
     html += '<div class="settings-popup-card settings-player-card"><label for="settingsPopupPlayer1">Ｐ２</label><div class="settings-player-titlebar"><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="0">&lt;</button><div class="settings-player-title">Ｐ２</div><button type="button" class="settings-name-swap" data-name-swap-from="1" data-name-swap-to="2">&gt;</button></div><input class="settings-player-name-input" id="settingsPopupPlayer1" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" value="' + escapeHtml(state.players[1] || '') + '"></div>';
