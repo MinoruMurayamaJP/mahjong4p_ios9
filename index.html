@@ -1488,7 +1488,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1402</div>
+          <div class="version">Ver.260630-1403</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1920,6 +1920,45 @@ function drawText(ctx, text, x, y, options) {
     ctx.textBaseline = (_e = options.baseline) !== null && _e !== void 0 ? _e : "middle";
     ctx.fillText(text, x, y);
 }
+function drawSignedImageValue(ctx, value, rightX, y, options) {
+    var _a, _b, _c, _d, _e;
+    if (options === void 0) { options = {}; }
+    if (value === null || value === void 0) {
+        drawText(ctx, "-", rightX, y, options);
+        return;
+    }
+    var size = (_a = options.size) !== null && _a !== void 0 ? _a : 23;
+    var weight = (_b = options.weight) !== null && _b !== void 0 ? _b : 400;
+    var color = (_c = options.color) !== null && _c !== void 0 ? _c : "#17202a";
+    var baseline = (_d = options.baseline) !== null && _d !== void 0 ? _d : "middle";
+    var signScale = (_e = options.signScale) !== null && _e !== void 0 ? _e : 0.84;
+    if (value === 0) {
+        drawText(ctx, "0", rightX, y, {
+            align: "right",
+            color: color,
+            weight: weight,
+            size: size,
+            baseline: baseline
+        });
+        return;
+    }
+    var sign = value > 0 ? "＋" : "－";
+    var digits = String(Math.abs(value));
+    var family = "-apple-system, BlinkMacSystemFont, sans-serif";
+    var signSize = Math.max(12, Math.round(size * signScale));
+    var gap = Math.max(0, Math.round(size * 0.01));
+    ctx.textBaseline = baseline;
+    ctx.textAlign = "left";
+    ctx.fillStyle = color;
+    ctx.font = "".concat(weight, " ").concat(size, "px ").concat(family);
+    var digitsWidth = ctx.measureText(digits).width;
+    ctx.font = "".concat(weight, " ").concat(signSize, "px ").concat(family);
+    var signWidth = ctx.measureText(sign).width;
+    var startX = rightX - (signWidth + gap + digitsWidth);
+    ctx.fillText(sign, startX, y);
+    ctx.font = "".concat(weight, " ").concat(size, "px ").concat(family);
+    ctx.fillText(digits, startX + signWidth + gap, y);
+}
 function drawReverseTitle(ctx, text, x, y, width, height, fillColor, textColor) {
     ctx.fillStyle = fillColor || "#17202a";
     drawRoundRect(ctx, x, y, width, height, 8);
@@ -2147,10 +2186,10 @@ function makeScoreImage() {
                 for (var index = 0; index < playerCount; index += 1) {
                     var value = scores[index];
                     var cellRightX = tableX + roundColW + playerColW * (index + 1) - Math.round(imageValueFont * 0.42);
-                    drawText(ctx, value === null ? "-" : signedImage(value), cellRightX, rowCenterY, {
-                        align: "right",
+                    drawSignedImageValue(ctx, value, cellRightX, rowCenterY, {
                         color: value === null ? palette.text : pickImageScoreColor(value, palette),
-                        size: imageValueFont
+                        size: imageValueFont,
+                        signScale: 0.84
                     });
                 }
             }
