@@ -1129,11 +1129,34 @@
       width: 42px;
       min-height: 42px;
       padding: 0;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--text);
-      font-size: 32px;
+      border-radius: 10px;
+      background: #f8d7da;
+      color: #7a2034;
+      border: 1px solid #efb6c0;
+      font-size: 30px;
+      font-weight: 700;
       line-height: 42px;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    }
+    .settings-popup-close:active {
+      background: #f2b8c4;
+    }
+    .image-back-close {
+      min-height: 42px;
+      padding: 0 14px;
+      border-radius: 10px;
+      background: #f8d7da;
+      color: #7a2034;
+      border: 1px solid #efb6c0;
+      font-size: var(--button-font-size);
+      font-weight: 700;
+      line-height: 40px;
+      text-align: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.55);
+    }
+    .image-back-close:active {
+      background: #f2b8c4;
     }
     .settings-popup-grid {
       display: flex;
@@ -1241,7 +1264,14 @@
       border-color: #3a424c;
     }
     body.theme-dark .settings-popup-close {
-      color: #f3f6f8;
+      color: #7a2034;
+      background: #f8d7da;
+      border-color: #efb6c0;
+    }
+    body.theme-dark .image-back-close {
+      color: #7a2034;
+      background: #f8d7da;
+      border-color: #efb6c0;
     }
 
 
@@ -1430,7 +1460,7 @@
       <button id="makeImageTop" type="button" class="top-image-button">画像作成</button>
       <div class="app-header-right">
         <div class="version-rate-wrap">
-          <div class="version">Ver.260618-1397</div>
+          <div class="version">Ver.260618-1398</div>
           <div id="rateLabelTop" class="header-rate">Rate 50x</div>
         </div>
         <button id="jumpToSettings" type="button" class="icon-settings" aria-label="設定">⚙</button>
@@ -1499,11 +1529,11 @@
     <section id="imagePreview" class="image-preview">
       <div class="section-head">
         <h2>画像</h2>
-        <button id="backToInputFromImage" type="button" class="secondary small">最終入力行へ</button>
+        <button id="backToInputFromImage" type="button" class="image-back-close">最終入力へ</button>
       </div>
       <img id="scoreImage" alt="麻雀スコア画像">
       <a id="downloadImage" href="#" download="mahjong-score.png">画像を保存</a>
-      <div class="muted">iPhoneでは画像を長押しして保存できます。</div>
+      <div class="muted">iPhoneでは画像を長押しして保存できます。ダブルタップで画像モード切替。</div>
     </section>
   </main>
 
@@ -1617,6 +1647,9 @@ var imagePreview = document.getElementById("imagePreview");
 var scoreImage = document.getElementById("scoreImage");
 var downloadImage = document.getElementById("downloadImage");
 var backToInputFromImageButton = document.getElementById("backToInputFromImage");
+var lastScoreImageTapAt = 0;
+var lastScoreImageTapX = 0;
+var lastScoreImageTapY = 0;
 var playerInputs = Array.from({ length: playerCount }, function (_, index) { return document.getElementById("player".concat(index)); });
 // モーダル表示用のHTML要素を取得
 var modalOverlay = document.getElementById("modalOverlay");
@@ -2873,6 +2906,11 @@ function nextImageMode(mode) {
     if (index < 0) index = 0;
     return order[(index + 1) % order.length];
 }
+function cycleImageModeAndRefresh() {
+    state.imageMode = nextImageMode(state.imageMode);
+    saveState();
+    makeScoreImage();
+}
 function imageModePalette(mode) {
     var darkBg = mode === "M2" || mode === "C2";
     var colorful = mode === "C1" || mode === "C2";
@@ -3043,9 +3081,28 @@ if (makeImageTopButton) {
 }
 if (scoreImage) {
     scoreImage.addEventListener("dblclick", function () {
-        state.imageMode = nextImageMode(state.imageMode);
-        saveState();
-        makeScoreImage();
+        cycleImageModeAndRefresh();
+    });
+    scoreImage.addEventListener("touchend", function (event) {
+        var touch = event.changedTouches && event.changedTouches[0];
+        var x = touch ? touch.clientX : 0;
+        var y = touch ? touch.clientY : 0;
+        var now = Date.now();
+        var span = now - lastScoreImageTapAt;
+        var moved = Math.abs(x - lastScoreImageTapX) > 24 || Math.abs(y - lastScoreImageTapY) > 24;
+        if (span > 0 && span < 360 && !moved) {
+            if (event.cancelable) {
+                event.preventDefault();
+            }
+            lastScoreImageTapAt = 0;
+            lastScoreImageTapX = 0;
+            lastScoreImageTapY = 0;
+            cycleImageModeAndRefresh();
+            return;
+        }
+        lastScoreImageTapAt = now;
+        lastScoreImageTapX = x;
+        lastScoreImageTapY = y;
     });
 }
 backToInputFromImageButton.addEventListener("click", function () {
